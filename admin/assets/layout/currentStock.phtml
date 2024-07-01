@@ -1,0 +1,264 @@
+<?php
+$today = getCurrentDate();
+$todayTime = getCurrentDateOnly();
+$day1 = $todayTime . ' 00:00:00';
+$day2 = $todayTime . ' 23:59:59';
+$current_stock = get_data("current_stock", "WHERE c_business_id = '" . $sbs['bss']['business_id'] . "'");
+$totalStockValue = 0;
+$totalStockValue2 = 0;
+$cashier = single_item("users", "WHERE user_id = '" . $sbs['user']['user_id'] . "'");
+$report = "BUSINESS CURRENT STOCK";
+
+?>
+<!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <div class="text-center mb-18">
+                            <!--begin::Title-->
+                            <h3 class="fs-2hx text-dark mb-6"><?= $sbs['bss']['b_name'] ?></h3>
+                            <!--end::Title-->
+                            <!--begin::Text-->
+                            <?php if (!empty($sbs['user']['is_cashier'])) { ?>
+                            <div class="fs-5 text-dark fw-bold"><?= $report ?>
+                                <br /><?= 'As At : ' . date('d/m/Y g:i:s', strtotime($today))?>
+                            </div>
+
+                        <?php } else {?>
+                        <div class="fs-5 text-dark fw-bold"><?= $report ?>
+                                <br /><?= 'As At : ' . date('d/m/Y g:i:s', strtotime($today)) . '<br />Total Stock Value(By buying price) = UGX:  ' . number_format(getStockValue($sbs['bss']['business_id'])['on_buying_price'], 0, '', ','). '<br />Total Stock Value(By Selling Price) = UGX:  ' . number_format(getStockValue($sbs['bss']['business_id'])['on_selling_price'], 0, '', ','); ?><br />
+                            </div>
+                         <?php } ?>
+                            <br>
+                            <!--end::Text-->
+
+                        <!--begin::Products-->
+                        <div class="card card-flush">
+                            <!--begin::Card header-->
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <!--begin::Card title-->
+                                <div class="card-title">
+                                    <!--begin::Search-->
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                                        <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <input type="text" data-kt-ecommerce-product-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Product" />
+                                    </div>
+                                    <!--end::Search-->
+                                </div>
+                                <!--end::Card title-->
+                                <!--begin::Card toolbar-->
+                                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                    <div class="w-100 mw-150px">
+                                        <!--begin::Select2-->
+                                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Status" data-kt-ecommerce-product-filter="status">
+                                            <option></option>
+                                            <option value="all">All</option>
+                                            <option value="high_stock">high_stock</option>
+                                            <option value="low_stock">low_stock</option>
+                                        </select>
+                                        <!--end::Select2-->
+                                    </div>
+                                    <!--begin::Add product-->
+                                    <?php if (empty($sbs['user']['is_cashier'])) { ?>
+                                    <a class="btn btn-primary">Total Stock Value: UGX: <?= number_format(getStockValue($sbs['bss']['business_id'])['on_selling_price'], 0, '', ','); ?></a>
+                                    <!--end::Add product-->
+                                <?php } ?>
+                                </div>
+                                <!--end::Card toolbar-->
+                            </div>
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <!--begin::Table-->
+                                <?php if (empty($sbs['user']['is_cashier'])) { ?>
+                                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_products_table">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <!--begin::Table row-->
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-10px">S/No.</th>
+                                            <th class="min-w-100px">Product</th>
+                                            <th class=" min-w-70px">Quantity</th>
+                                            <th class=" min-w-90px">Buying Price</th>
+                                            <th class=" min-w-100px">Selling Price</th>
+                                            <th class=" min-w-100px">Total Amounts</th>
+                                            <th class=" min-w-10px">Status</th>
+                                            <th></th>
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody class="fw-bold text-gray-600">
+                                        <!--begin::Table row-->
+                                        <?php
+                                        $num = 0;
+                                        foreach ($current_stock as $stock) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $stock['item_id'] . "'");
+                                        ?>
+                                            <tr>
+                                                <!--begin::Checkbox-->
+                                                <td><?= $num += 1 ?></td>
+                                                <!--end::Checkbox-->
+                                                <!--begin::Category=-->
+                                                <td ><?= $itemData['item_name'] ?></td>
+                                                <!--end::Category=-->
+
+                                                <!--begin::Qty=-->
+                                                <td class=" pe-0" data-order="47">
+                                                    <?php if ($stock['quantity'] <= 10) { ?>
+                                                        <span class="badge badge-light-danger">Low stock</span>
+                                                        <span class="fw-bolder text-warning ms-3"><?= $stock['quantity'] ?></span>
+                                                    <?php } else { ?>
+                                                        <span class="fw-bolder ms-3"><?= $stock['quantity'] ?></span>
+                                                    <?php } ?>
+
+                                                </td>
+                                                <!--end::Qty=-->
+                                                <!--begin::SKU=-->
+                                                <td class=" pe-0">
+
+                                                    <span class="fw-bolder">UGX: <?= number_format($itemData['buying_price'], 0, '', ','); ?></span>
+                                                </td>
+                                                <!--end::SKU=-->
+                                                <!--begin::Price=-->
+                                                <td class=" pe-0">
+                                                    <span class="fw-bolder text-dark">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></span>
+                                                </td>
+                                                <!--end::Price=-->
+                                                <!--begin::Rating-->
+                                                <td>UGX: <?= number_format($itemData['item_price'] * $stock['quantity'], 0, '', ','); ?></td>
+                                                <!--end::Rating-->
+                                                <!--begin::Status=-->
+                                                <?php if ($stock['quantity'] > 10) { ?>
+                                                    <td class=" pe-0" data-order="high_stock">
+                                                        <!--begin::Badges-->
+                                                        <div class="badge badge-light-success">high_stock</div>
+                                                        <!--end::Badges-->
+                                                    </td>
+                                                <?php } else { ?>
+                                                    <td class=" pe-0" data-order="low_stock">
+                                                        <!--begin::Badges-->
+                                                        <div class="badge badge-light-danger">low_stock</div>
+                                                        <!--end::Badges-->
+                                                    </td>
+                                                <?php } ?>
+
+                                                <!--end::Status=-->
+                                                <!--begin::Action=-->
+                                                <td></td>
+                                                <!--end::Action=-->
+                                            </tr>
+                                            <!--end::Table row-->
+                                        <?php endforeach; ?>
+                                        <!--begin::Table row-->
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                            <?php }else { ?>
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_products_table">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <!--begin::Table row-->
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th >S/No.</th>
+                                            <th >Product</th>
+                                            <th >Units</th>
+                                            <th >Quantity</th>
+                                            <!-- <th class=" min-w-90px">Buying Price</th> -->
+                                            <th >Selling Price</th>
+                                            <th >Total Amounts</th>
+                                            <th >Status</th>
+                                            <th></th>
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody class="fw-bold text-gray-600">
+                                        <!--begin::Table row-->
+                                        <?php
+                                        $num = 0;
+                                        foreach ($current_stock as $stock) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $stock['item_id'] . "'");
+                                        ?>
+                                            <tr>
+                                                <!--begin::Checkbox-->
+                                                <td ><?= $num += 1 ?></td>
+                                                <!--end::Checkbox-->
+                                                <!--begin::Category=-->
+                                                <td><?= $itemData['item_name'] ?></td>
+                                                <!--end::Category=-->
+<td><?= $itemData['units'] ?></td>
+                                                <!--begin::Qty=-->
+                                                <td data-order="47">
+                                                    <?php if ($stock['quantity'] <= 10) { ?>
+                                                        <span class="badge badge-light-danger">Low stock</span>
+                                                        <span class="fw-bolder text-warning ms-3"><?= $stock['quantity'] ?></span>
+                                                    <?php } else { ?>
+                                                        <span class="fw-bolder ms-3"><?= $stock['quantity'] ?></span>
+                                                    <?php } ?>
+
+                                                </td>
+
+                                                <!--end::Qty=-->
+                                                <!--begin::SKU=-->
+                                              <!--   <td class=" pe-0">
+
+                                                    <span class="fw-bolder">UGX: <?= number_format($itemData['buying_price'], 0, '', ','); ?></span>
+                                                </td> -->
+                                                <!--end::SKU=-->
+                                                <!--begin::Price=-->
+                                                <td >
+                                                    <span class="fw-bolder text-dark">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></span>
+                                                </td>
+                                                <!--end::Price=-->
+                                                <!--begin::Rating-->
+                                                <td>UGX: <?= number_format($itemData['item_price'] * $stock['quantity'], 0, '', ','); ?></td>
+                                                <!--end::Rating-->
+                                                <!--begin::Status=-->
+                                                <?php if ($stock['quantity'] > 10) { ?>
+                                                    <td class=" pe-0" data-order="high_stock">
+                                                        <!--begin::Badges-->
+                                                        <div class="badge badge-light-success">high_stock</div>
+                                                        <!--end::Badges-->
+                                                    </td>
+                                                <?php } else { ?>
+                                                    <td  data-order="low_stock">
+                                                        <!--begin::Badges-->
+                                                        <div class="badge badge-light-danger">low_stock</div>
+                                                        <!--end::Badges-->
+                                                    </td>
+                                                <?php } ?>
+
+                                                <!--end::Status=-->
+                                                <!--begin::Action=-->
+                                                <td></td>
+                                                <!--end::Action=-->
+                                            </tr>
+                                            <!--end::Table row-->
+                                        <?php endforeach; ?>
+                                        <!--begin::Table row-->
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                              <?php } ?>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Card body-->
+                </div>
+                        <!--end::Products-->
+                   </div>
+
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->

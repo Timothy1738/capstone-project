@@ -59,6 +59,16 @@
     <!--Home page start-->
     <section id="home">
         <div class="container">
+            <?php
+            if (isset($_GET['error'])) { ?>
+                <div class="error">
+                    <?php echo htmlspecialchars($_GET['error']) ?>
+                </div>
+            <?php }
+            if (isset($_GET['success'])) { ?>
+                <div class="success"><?php echo htmlspecialchars($_GET['success']) ?></div>
+            <?php }
+            ?>
             <div class="home_content">
                 <h1>Discover a World of <br> Talent - Your Journey Starts Here</h1>
                 <span>Where Creativity Finds its Audience</span>
@@ -228,6 +238,14 @@
     </section>
     <!--end of working process-->
 
+    <section class="eventsubs">
+        <div class="container">
+            <h1>Are you planning an event?</h1>
+            <p>This is unique opportunity for your event to get the attention it deserves. Be it music galas, talent shows, beauty pagents, parties, artist performances among many other events, we gat you covered. By advertising your event to the right audience, you get noticed and more profit for you. So what are you waiting for, click that button now and get started!</p>
+            <button class="visible btn">Advertise with us</button>
+        </div>
+    </section>
+
     <section class="faqs">
         <div class="container">
             <h3>Frequently asked Questions?</h3>
@@ -253,7 +271,7 @@
                         <h5>Is mentorship free?</h5>
                         <iconify-icon icon="mingcute:down-fill"></iconify-icon>
                     </div>
-                    <div class="answer">Answer 2</div>
+                    <div class="answer">Yes. Our goal is to help all talented people out there become successfull basing on their talent</div>
                 </div>
                 <!--end of faq card-->
 
@@ -262,7 +280,7 @@
                         <h5>What next after I become successful?</h5>
                         <iconify-icon icon="mingcute:down-fill"></iconify-icon>
                     </div>
-                    <div class="answer">Answer 2</div>
+                    <div class="answer">You become part of our alumni community to support other upcoming talents as you also gain from your talent</div>
                 </div>
                 <!--end of faq card-->
 
@@ -271,7 +289,7 @@
                         <h5>What next after meeting a mentor?</h5>
                         <iconify-icon icon="mingcute:down-fill"></iconify-icon>
                     </div>
-                    <div class="answer">Answer 2</div>
+                    <div class="answer">The mentor exposes you to a wide number of opportunities such as free training, gigs and also offers advice on how to improve your career</div>
                 </div>
                 <!--end of faq card-->
 
@@ -280,16 +298,7 @@
                         <h5>How safe is my data?</h5>
                         <iconify-icon icon="mingcute:down-fill"></iconify-icon>
                     </div>
-                    <div class="answer">Answer 2</div>
-                </div>
-                <!--end of faq card-->
-
-                <div class="faq-card">
-                    <div class="question">
-                        <h5>Any other question?</h5>
-                        <iconify-icon icon="mingcute:down-fill"></iconify-icon>
-                    </div>
-                    <div class="answer">Answer 2</div>
+                    <div class="answer">We dont share your data with anyone.</div>
                 </div>
                 <!--end of faq card-->
             </div>
@@ -315,18 +324,18 @@
                 </div>
                 <div class="form">
                     <h4>Send Us a Message</h4>
-                    <form action="" class="needs-validation" novalidate>
+                    <form action="backend/sendMessage.php" method="post">
                         <label for="name">Enter Your Name</label>
-                        <input type="text" name="name" id="">
+                        <input type="text" name="name" id="" required>
 
                         <label for="email">Enter Your Email</label>
-                        <input type="email" name="email">
+                        <input type="email" name="email" required>
 
                         <label for="subject">Subject</label>
                         <input type="text" name="subject" required>
 
                         <label for="message">Message</label>
-                        <textarea name="message" id=""></textarea>
+                        <textarea name="message" id="" rows="8" required></textarea>
 
                         <button type="submit" class="btn">Send Message <iconify-icon icon="iconamoon:send-bold"></iconify-icon></button>
                     </form>
@@ -365,8 +374,8 @@
                     <p>
                         Subscribe to our news letter and be the first to hear about our exciting offers, upcoming events, and so much more
                     </p>
-                    <form action="">
-                        <input type="email" name="subscription-email" placeholder="Enter Your Email" id="" required>
+                    <form action="backend/newsLetterSubs.php" method="post">
+                        <input type="email" name="email" placeholder="Enter Your Email" id="" required>
                         <input type="submit" value="Subscribe">
                     </form>
                 </div>
@@ -400,22 +409,22 @@
                 </div>
                 <div class="modal-body">
                     <!-- Form inside modal -->
-                    <form method="get">
+                    <form method="POST" action="backend/promoterRequests.php">
                         <div class="form-group">
                             <label for="talent_area">Talent Area</label>
-                            <input type="text" class="form-control" id="talent_area" aria-describedby="emailHelp" placeholder="e.g Music, Acting etc" required>
+                            <input type="text" class="form-control" id="talent_area" aria-describedby="emailHelp" name="talent" placeholder="e.g Music, Acting etc" required>
                         </div>
                         <div class="form-group">
                             <label for="brand_name">Brand Name</label>
-                            <input type="text" class="form-control" id="brand_name" aria-describedby="emailHelp" placeholder="Enter Brand Name">
+                            <input type="text" class="form-control" id="brand_name" aria-describedby="emailHelp" name="brand" placeholder="Enter Brand Name">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputEmail1">Email address</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
+                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email" placeholder="Enter email" required>
                         </div>
                         <div class="form-group">
                             <label for="number">Contact</label>
-                            <input type="text" class="form-control" id="number" aria-describedby="emailHelp" placeholder="e.g 07789076478" required>
+                            <input type="text" class="form-control" id="number" aria-describedby="emailHelp" name="contact" placeholder="e.g 07789076478" required>
                         </div>
                         <button type="submit" class="btn">Submit</button>
                     </form>
@@ -424,11 +433,27 @@
         </div>
     </div>
 
+    <div id="myModal" class="mymodal">
+        <div class="mymodal-content">
+            <span class="close">&times;</span>
+            <form id="courseForm" action="backend/eventsub.php" method="post">
+                <div class="title">
+                    <h3>Tell Us About your next event 👍</h3>
+                    <p>We shall get back to you as soon as possible!</p>
+                </div>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="tel" placeholder="Contact" required>
+                <textarea name="text" id="" rows="6" placeholder="Tell us about your event"></textarea>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+    </div>
+
     <!--ICONIFY JS-->
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 
     <!--MAIN JS-->
-    <script src="./js/main.js"></script>
+    <script src="js/main.js"></script>
 
     <!-- SCROLL BACK TO TOP -->
     <button class="scroll-to-top"><iconify-icon icon="fluent-mdl2:up"></iconify-icon></button>
@@ -437,6 +462,71 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function openModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'block';
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+
+        // Event listener to open the modal when the button is clicked
+        document.querySelectorAll('.visible').forEach(button => {
+            button.addEventListener('click', function() {
+                openModal();
+            });
+        });
+
+        // Event listener to close the modal when the close button is clicked
+        document.querySelector('.mymodal .close').addEventListener('click', function() {
+            closeModal();
+        });
+
+
+        function removeMessages() {
+            // Get all elements with class 'error' and 'success'
+            var errorMessages = document.querySelectorAll('.error');
+            var successMessages = document.querySelectorAll('.success');
+
+            // Function to remove messages
+            function removeElement(element) {
+                element.parentNode.removeChild(element);
+            }
+
+            // Remove error messages after 1 minute
+            errorMessages.forEach(function(element) {
+                setTimeout(function() {
+                    removeElement(element);
+                }, 5000);
+            });
+
+            // Remove success messages after 1 minute
+            successMessages.forEach(function(element) {
+                setTimeout(function() {
+                    removeElement(element);
+                }, 5000); // 1 minute = 60,000 milliseconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = function() {
+            // Call the existing window.onload function to clear messages from the URL
+            if (window.history.replaceState) {
+                const url = new URL(window.location);
+                url.searchParams.delete('error');
+                url.searchParams.delete('success');
+                window.history.replaceState(null, null, url);
+            }
+
+            // Call the function to remove messages from the DOM after 1 minute
+            removeMessages();
+        };
+    </script>
 
 </body>
 

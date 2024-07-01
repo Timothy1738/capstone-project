@@ -1,0 +1,25 @@
+<?php
+session_start();
+
+// remove all session variables
+session_unset(); 
+//unset cookies
+
+// destroy the session 
+session_destroy(); 
+
+if (!empty($_COOKIE['userID'])) {
+  $_COOKIE['userID'] = '';
+  unset($_COOKIE['userID']);
+  setcookie('userID', null, -1);
+  setcookie('userID', null, -1,'/'); 
+}
+if (!empty($_COOKIE['businessID'])) {
+  $_COOKIE['businessID'] = '';
+  unset($_COOKIE['businessID']);
+  setcookie('businessID', null, -1);
+  setcookie('businessID', null, -1,'/'); 
+}
+
+header('location: index.php');
+exit();

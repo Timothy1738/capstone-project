@@ -1,182 +1,54 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("location: logout.php");
-}
-
-require_once "../backend/functions.php";
-$user_id = $_SESSION['user_id'];
-$user = get_user($user_id);
+include "./includes/header.php";
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings | TalentVerse</title>
-    <!-- LOCAL CSS -->
-    <link rel="stylesheet" href="../css/styles.css">
-</head>
+<div class="settings container">
+    <div class="settings_tabs">
+        <ul class="these_tabs">
+            <li><a href="settings.php">Change Profile Picture</a></li>
+            <li class="active"><a href="editprofile.php">Edit Profile</a></li>
+            <li><a href="changecoverpicture.php">Change Cover Picture</a></li>
+            <li><a href="changepassword.php">Change Password</a></li>
+            <li><a href="changeusername.php">Change Username</a></li>
+        </ul>
 
-<body>
-    <div class="main_class">
-        <div class="navbar">
-            <div class="container">
-                <a href="home.php">
-                    <div class="logo">
-                        <h1>TalentVerse</h1>
-                    </div>
-                </a>
-                <div class="action-links">
-                    <a href="uploadvideo.php">
-                        <div class="uploadvideo">
-                            <iconify-icon icon="mage:video-upload-fill"></iconify-icon>
-                            <p>Upload</p>
+        <div class="these_pages">
+            <div id="username" class="pages">
+                <form action="../backend/edit-userprofile.php" method="post">
+                    <h3>Edit Profile</h3>
+                    <?php
+                    if (isset($_GET['error'])) { ?>
+                        <div class="error">
+                            <?php echo htmlspecialchars($_GET['error']) ?>
                         </div>
-                    </a>
-                    <!-- end of this section -->
+                    <?php }
+                    if (isset($_GET['success'])) { ?>
+                        <div class="success"><?php echo htmlspecialchars($_GET['success']) ?></div>
+                    <?php }
+                    ?>
+                    <div class="form-box">
+                        <div class="form-group">
+                            <label for="fname">First Name</label>
+                            <input type="text" id="fname" name="fname" value="<?= $user['firstname'] ?>" required>
 
-                    <a href="events.php">
-                        <div class="events">
-                            <iconify-icon icon="simple-line-icons:calender"></iconify-icon>
-                            <p>Events</p>
+                            <label for="lname">Last Name</label>
+                            <input type="text" name="lname" id="lname" value="<?= $user['lastname'] ?>" required>
                         </div>
-                    </a>
-                    <!-- end of this section -->
-
-                    <div class="theme">
-                        <img src="../images/dark theme icon/sun.png" alt="">
-                        <p>Dark Mode</p>
+                        <!-- end of form group -->
+                         <div class="form-group">
+                            <label for="">About Yourself</label>
+                            <textarea name="about" id="" rows="8" placeholder="Tell your viewers about yourself..."><?= $user['about'] ?></textarea>
+                         </div>
+                        <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
                     </div>
-                    <!-- end of this section -->
-
-                    <div class="notifications">
-                        <iconify-icon icon="oui:bell"></iconify-icon>
-                        <div class="notification_count">
-                            16
-                        </div>
-                        <p>Notifications</p>
-                    </div>
-                    <!-- end of this section -->
-
-                    <div class="profile">
-                        <div class="img profileImg">
-                            <img src="../dbimages/<?= $user['profile_picture'] ?>" alt="">
-                        </div>
-                        <p>Me<iconify-icon icon="mingcute:down-line"></iconify-icon></p>
-                    </div>
-                    <!-- end of this section -->
-
-                    <div class="hover-box" id="hoverBox">
-                        <ul class="links">
-                            <li><a href="profile.php"><iconify-icon icon="iconoir:profile-circle"></iconify-icon> Profile</a></li>
-                            <li><a href="messages.php"><iconify-icon icon="tabler:message-2"></iconify-icon>Messages</a></li>
-                            <li><a href="settings.php"><iconify-icon icon="ic:baseline-settings"></iconify-icon>Settings</li></a>
-                        </ul>
-                        <hr>
-                        <ul class="logout">
-                            <li><a href="logout.php"><iconify-icon icon="ic:baseline-logout"></iconify-icon> Log out</a></li>
-                        </ul>
-                    </div>
-                </div>
+                    <input type="submit" value="Edit Profile">
+                </form>
             </div>
-        </div>
-        <!-- END OF THIS PAGE NAVBAR -->
-
-        <div class="settings container">
-            <div class="settings_tabs">
-                <ul class="these_tabs">
-                    <li><a href="settings.php">Change Profile Picture</a></li>
-                    <li class="active"><a href="editprofile.php">Edit Profile</a></li>
-                    <li><a href="changecoverpicture.php">Change Cover Picture</a></li>
-                    <li><a href="changepassword.php">Change Password</a></li>
-                    <li><a href="changeusername.php">Change Username</a></li>
-                </ul>
-
-                <div class="these_pages">
-                    <div id="username" class="pages">
-                        <form action="../backend/edit-userprofile.php" method="post">
-                            <h3>Edit Profile</h3>
-                            <?php
-                            if (isset($_GET['error'])) { ?>
-                                <div class="error">
-                                    <?php echo htmlspecialchars($_GET['error']) ?>
-                                </div>
-                            <?php }
-                            if (isset($_GET['success'])) { ?>
-                                <div class="success"><?php echo htmlspecialchars($_GET['success']) ?></div>
-                            <?php }
-                            ?>
-                            <div class="form-box">
-                                <div class="form-group">
-                                    <label for="fname">First Name</label>
-                                    <input type="text" id="fname" name="fname" value="<?= $user['firstname'] ?>" required>
-
-                                    <label for="lname">Last Name</label>
-                                    <input type="text" name="lname" id="lname" value="<?= $user['lastname'] ?>" required>
-                                </div>
-                                <!-- end of form group -->
-                                <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
-                            </div>
-                            <input type="submit" value="Edit Profile">
-                        </form>
-                    </div>
-                    <!-- END OF CHANGE USERNAME -->
-                </div>
-            </div>
-
+            <!-- END OF CHANGE USERNAME -->
         </div>
     </div>
-    <!-- local js -->
-    <script defer src="../js/main.js"></script>
 
-    <!-- SCROLL BACK TO TOP -->
-    <button class="scroll-to-top"><iconify-icon icon="fluent-mdl2:up"></iconify-icon></button>
-
-    <!--ICONIFY JS-->
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-
-    <script>
-        function removeMessages() {
-            // Get all elements with class 'error' and 'success'
-            var errorMessages = document.querySelectorAll('.error');
-            var successMessages = document.querySelectorAll('.success');
-
-            // Function to remove messages
-            function removeElement(element) {
-                element.parentNode.removeChild(element);
-            }
-
-            // Remove error messages after 1 minute
-            errorMessages.forEach(function(element) {
-                setTimeout(function() {
-                    removeElement(element);
-                }, 5000);
-            });
-
-            // Remove success messages after 1 minute
-            successMessages.forEach(function(element) {
-                setTimeout(function() {
-                    removeElement(element);
-                }, 5000); // 1 minute = 60,000 milliseconds
-            });
-        }
-
-        // Call the function when the page loads
-        window.onload = function() {
-            // Call the existing window.onload function to clear messages from the URL
-            if (window.history.replaceState) {
-                const url = new URL(window.location);
-                url.searchParams.delete('error');
-                url.searchParams.delete('success');
-                window.history.replaceState(null, null, url);
-            }
-
-            // Call the function to remove messages from the DOM after 1 minute
-            removeMessages();
-        };
-    </script>
-</body>
-
-</html>
+</div>
+</div>
+<!-- local js -->
+<?php include "./includes/footer.php"; ?>

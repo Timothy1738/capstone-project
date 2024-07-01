@@ -1,0 +1,624 @@
+<?php
+$todayTime = getCurrentDateOnly();
+$day1 = $todayTime . ' 00:00:00';
+$day2 = $todayTime . ' 23:59:59';
+// $orders = getTodaysData("my_orders", "o_business_id", $sbs['bss']['business_id'], "created", getCurrentDateOnly());
+$orders = getSalesBetweenDays($day1, $day2, $sbs['bss']['business_id']);
+$date = 0;
+$day0 = 0;
+$day1 = 0;
+$day2 = 0;
+$day3 = 0;
+$day4 = 0;
+$day5 = 0;
+$day6 = 0;
+$day7 = 0;
+$average_sales = 0;
+$number_days = 1;
+$eightDays = getLastEightDays($sbs['bss']['business_id']);
+$date_sale  = 0;
+if (is_array($eightDays)) {
+    $number_days = count($eightDays);
+    if ($number_days > 7) {
+        $number_days = $number_days - 1;
+    }
+    if (!empty($eightDays[0]['created'])) {
+        $day7 = $eightDays[0]['created'];
+        $date = $day7;
+    }
+
+    if (!empty($eightDays[1]['created'])) {
+        $day6 = $eightDays[1]['created'];
+        $date = $day6;
+        $date_sale  = $day6;
+    }
+    if (!empty($eightDays[2]['created'])) {
+        $day5 = $eightDays[2]['created'];
+        $date = $day5;
+        $date_sale  = $day5;
+    }
+    if (!empty($eightDays[3]['created'])) {
+        $day4 = $eightDays[3]['created'];
+        $date = $day4;
+        $date_sale  = $day4;
+    }
+    if (!empty($eightDays[4]['created'])) {
+        $day3 = $eightDays[4]['created'];
+        $date = $day3;
+        $date_sale  = $day3;
+    }
+    if (!empty($eightDays[5]['created'])) {
+        $day2 = $eightDays[5]['created'];
+        $date = $day2;
+        $date_sale  = $day2;
+    }
+    if (!empty($eightDays[6]['created'])) {
+        $day1 = $eightDays[6]['created'];
+        $date = $day1;
+        $date_sale  = $day1;
+    }
+    if (!empty($eightDays[7]['created'])) {
+        $day0 = $eightDays[7]['created'];
+        $date = $day0;
+        $date_sale  = $day0;
+    }
+}
+
+$sale6 = getTotalSalesByDate($sbs['bss']['business_id'], $day6);
+$sale5 = getTotalSalesByDate($sbs['bss']['business_id'], $day5);
+$sale4 = getTotalSalesByDate($sbs['bss']['business_id'], $day4);
+$sale3 = getTotalSalesByDate($sbs['bss']['business_id'], $day3);
+$sale2 = getTotalSalesByDate($sbs['bss']['business_id'], $day2);
+$sale1 = getTotalSalesByDate($sbs['bss']['business_id'], $day1);
+$sale0 = getTotalSalesByDate($sbs['bss']['business_id'], $day0);
+$totalSales = $sale0 + $sale1 + $sale2 + $sale3 + $sale4 + $sale6 + $sale6;
+if($totalSales == 0){
+$average_sales = 0;
+}else{
+   $average_sales = $totalSales / $number_days; 
+}
+
+$sales1 = getTotalSummaryByMonth($sbs['bss']['business_id'], 01)['total'];
+$sales2 = getTotalSummaryByMonth($sbs['bss']['business_id'], 02)['total'];
+$sales3 = getTotalSummaryByMonth($sbs['bss']['business_id'], 03)['total'];
+$sales4 = getTotalSummaryByMonth($sbs['bss']['business_id'], 04)['total'];
+$sales5 = getTotalSummaryByMonth($sbs['bss']['business_id'], 05)['total'];
+$sales6 = getTotalSummaryByMonth($sbs['bss']['business_id'], 06)['total'];
+$sales7 = getTotalSummaryByMonth($sbs['bss']['business_id'], 07)['total'];
+$sales8 = getTotalSummaryByMonth($sbs['bss']['business_id'], 8)['total'];
+$sales9 = getTotalSummaryByMonth($sbs['bss']['business_id'], 9)['total'];
+$sales10 = getTotalSummaryByMonth($sbs['bss']['business_id'], 10)['total'];
+$sales11 = getTotalSummaryByMonth($sbs['bss']['business_id'], 11)['total'];
+$sales12 = getTotalSummaryByMonth($sbs['bss']['business_id'], 12)['total'];
+$pro1 = getTotalSummaryByMonth($sbs['bss']['business_id'], 01)['profit'];
+$pro2 = getTotalSummaryByMonth($sbs['bss']['business_id'], 02)['profit'];
+$pro3 = getTotalSummaryByMonth($sbs['bss']['business_id'], 03)['profit'];
+$pro4 = getTotalSummaryByMonth($sbs['bss']['business_id'], 04)['profit'];
+$pro5 = getTotalSummaryByMonth($sbs['bss']['business_id'], 05)['profit'];
+$pro6 = getTotalSummaryByMonth($sbs['bss']['business_id'], 06)['profit'];
+$pro7 = getTotalSummaryByMonth($sbs['bss']['business_id'], 07)['profit'];
+$pro8 = getTotalSummaryByMonth($sbs['bss']['business_id'], 8)['profit'];
+$pro9 = getTotalSummaryByMonth($sbs['bss']['business_id'], 9)['profit'];
+$pro10 = getTotalSummaryByMonth($sbs['bss']['business_id'], 10)['profit'];
+$pro11 = getTotalSummaryByMonth($sbs['bss']['business_id'], 11)['profit'];
+$pro12 = getTotalSummaryByMonth($sbs['bss']['business_id'], 12)['profit'];
+$pur1 = getTotalSummaryByMonth($sbs['bss']['business_id'], 01)['purchases'];
+$pur2 = getTotalSummaryByMonth($sbs['bss']['business_id'], 02)['purchases'];
+$pur3 = getTotalSummaryByMonth($sbs['bss']['business_id'], 03)['purchases'];
+$pur4 = getTotalSummaryByMonth($sbs['bss']['business_id'], 04)['purchases'];
+$pur5 = getTotalSummaryByMonth($sbs['bss']['business_id'], 05)['purchases'];
+$pur6 = getTotalSummaryByMonth($sbs['bss']['business_id'], 06)['purchases'];
+$pur7 = getTotalSummaryByMonth($sbs['bss']['business_id'], 07)['purchases'];
+$pur8 = getTotalSummaryByMonth($sbs['bss']['business_id'], 8)['purchases'];
+$pur9 = getTotalSummaryByMonth($sbs['bss']['business_id'], 9)['purchases'];
+$pur10 = getTotalSummaryByMonth($sbs['bss']['business_id'], 10)['purchases'];
+$pur11 = getTotalSummaryByMonth($sbs['bss']['business_id'], 11)['purchases'];
+$pur12 = getTotalSummaryByMonth($sbs['bss']['business_id'], 12)['purchases'];
+$ex1 = getTotalSummaryByMonth($sbs['bss']['business_id'], 01)['total_exp'];
+$ex2 = getTotalSummaryByMonth($sbs['bss']['business_id'], 02)['total_exp'];
+$ex3 = getTotalSummaryByMonth($sbs['bss']['business_id'], 03)['total_exp'];
+$ex4 = getTotalSummaryByMonth($sbs['bss']['business_id'], 04)['total_exp'];
+$ex5 = getTotalSummaryByMonth($sbs['bss']['business_id'], 05)['total_exp'];
+$ex6 = getTotalSummaryByMonth($sbs['bss']['business_id'], 06)['total_exp'];
+$ex7 = getTotalSummaryByMonth($sbs['bss']['business_id'], 07)['total_exp'];
+$ex8 = getTotalSummaryByMonth($sbs['bss']['business_id'], 8)['total_exp'];
+$ex9 = getTotalSummaryByMonth($sbs['bss']['business_id'], 9)['total_exp'];
+$ex10 = getTotalSummaryByMonth($sbs['bss']['business_id'], 10)['total_exp'];
+$ex11 = getTotalSummaryByMonth($sbs['bss']['business_id'], 11)['total_exp'];
+$ex12 = getTotalSummaryByMonth($sbs['bss']['business_id'], 12)['total_exp'];
+$cr1 = getTotalSummaryByMonth($sbs['bss']['business_id'], 01)['total_cr'];
+$cr2 = getTotalSummaryByMonth($sbs['bss']['business_id'], 02)['total_cr'];
+$cr3 = getTotalSummaryByMonth($sbs['bss']['business_id'], 03)['total_cr'];
+$cr4 = getTotalSummaryByMonth($sbs['bss']['business_id'], 04)['total_cr'];
+$cr5 = getTotalSummaryByMonth($sbs['bss']['business_id'], 05)['total_cr'];
+$cr6 = getTotalSummaryByMonth($sbs['bss']['business_id'], 06)['total_cr'];
+$cr7 = getTotalSummaryByMonth($sbs['bss']['business_id'], 07)['total_cr'];
+$cr8 = getTotalSummaryByMonth($sbs['bss']['business_id'], 8)['total_cr'];
+$cr9 = getTotalSummaryByMonth($sbs['bss']['business_id'], 9)['total_cr'];
+$cr10 = getTotalSummaryByMonth($sbs['bss']['business_id'], 10)['total_cr'];
+$cr11 = getTotalSummaryByMonth($sbs['bss']['business_id'], 11)['total_cr'];
+$cr12 = getTotalSummaryByMonth($sbs['bss']['business_id'], 12)['total_cr'];
+
+
+?>
+<!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <!--begin::Row-->
+                        <div class="row gy-5 g-xl-10">
+                            <!--begin::Col-->
+                            <div class="col-xl-4 mb-xl-10">
+                                <!--begin::Engage widget 1-->
+                                <div class="card h-md-60">
+                                    <!--begin::Body-->
+                                    <div class="card-body d-flex flex-column flex-center">
+                                        <!--begin::Heading-->
+                                        <div class="mb-2">
+                                            <!--begin::Title-->
+                                            <h1 class="fw-bold text-gray-800 text-center lh-lg">You Can Filter
+                                                <br />
+                                                <span class="fw-boldest">Add Generate Reports</span>
+                                            </h1>
+                                            <!--end::Title-->
+                                            <!--begin::Illustration-->
+                                            <div class="flex-grow-1 bgi-no-repeat bgi-size-contain bgi-position-x-center card-rounded-bottom h-200px mh-155px my-5 my-lg-12" style="background-image:url('<?=$sbs['config']['site_url'] ?>layout/assets/media/svg/illustrations/easy/4.svg')"></div>
+                                            <!--end::Illustration-->
+                                        </div>
+                                        <!--end::Heading-->
+                                        <!--begin::Links-->
+                                        <div class="text-center mb-1">
+                                            <!--begin::Link-->
+                                            <a class="btn btn-sm btn-primary me-2" data-bs-target="#kt_modal_new_address" data-bs-toggle="modal">Generate Report</a>
+                                            <!--end::Link-->
+                                            <!--begin::Link-->
+
+                                            <!--end::Link-->
+                                        </div>
+                                        <!--end::Links-->
+                                    </div>
+                                    <!--end::Body-->
+                                </div>
+                                <!--end::Engage widget 1-->
+                            </div>
+                            <!--end::Col-->
+
+                            <!--begin::Col-->
+                            <div class="col-xl-8 mb-5 mb-xl-10">
+                                <!--begin::Row-->
+                                <div class="row g-lg-5 g-xl-10">
+                                    <!--begin::Col-->
+                                    <!--begin::Col-->
+                                    <div class="col-xxl-12">
+                                        <!--begin::Chart widget 6-->
+                                        <div class="card card-flush h-lg-100">
+                                            <!--begin::Header-->
+                                            <div class="card-header py-7 mb-3">
+                                                <!--begin::Title-->
+                                                <h3 class="card-title align-items-start flex-column">
+                                                    <span class="card-label fw-bolder text-gray-800">Top Selling Products</span>
+                                                    <span class="text-gray-400 mt-1 fw-bold fs-6"><?= $sbs['bss']['b_name'] ?></span>
+                                                </h3>
+                                                <!--end::Title-->
+                                                <!--begin::Toolbar-->
+                                                <div class="card-toolbar">
+                                                    <a href="<?=$sbs['config']['site_url'] ?>" class="btn btn-sm btn-light">View All</a>
+                                                </div>
+                                                <!--end::Toolbar-->
+                                            </div>
+                                            <!--end::Header-->
+                                            <!--begin::Body-->
+                                            <div class="card-body py-0 ps-6 mt-n12">
+                                                <div id="kt_charts_widget_6"></div>
+                                            </div>
+                                            <!--end::Body-->
+                                        </div>
+                                        <!--end::Chart widget 6-->
+                                    </div>
+                                    <!--end::Col-->
+                                    <!--end::Col-->
+                                    <!--begin::Col-->
+                                    <div class="col-md-6 col-xl-6 mb-md-5 mb-xl-10">
+                                        <!--begin::Card widget 13-->
+
+                                        <!--end::Card widget 13-->
+                                        <!--begin::Card widget 7-->
+
+                                        <!--end::Card widget 7-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+
+                        <div style="width: 100%;" class="orders"></div>
+                        <!--end::Row-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
+ <!--begin::Modal - New Address-->
+    <div class="modal fade" id="kt_modal_new_address" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Form-->
+                <form class="form" id="getReport1">
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_new_address_header">
+                        <!--begin::Modal title-->
+                        <h2>Generate Reports</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                            <span class="svg-icon svg-icon-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                    <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Notice-->
+                            <!--begin::Notice-->
+                            <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-9 p-6">
+                                <!--begin::Icon-->
+                                <!--begin::Svg Icon | path: icons/duotune/general/gen044.svg-->
+                                Thank You For Choosing RSBS, Filter Your Business Perfimance Report
+                                <!--end::Svg Icon-->
+                                <!--end::Icon-->
+                            </div>
+                            <!--end::Notice-->
+                            <!--end::Notice-->
+
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+
+                                <label class="d-flex align-items-center fs-5 fw-bold mb-2">
+                                    <span>Select Report Type</span>
+                                    <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Your payment statements may very based on selected country"></i>
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Select-->
+                                <select name="report" data-control="select2" data-dropdown-parent="#kt_modal_new_address" data-placeholder="Select Report..." class="form-select form-select-solid">
+                                    <option value="">Select Report...</option>
+                                    <option value="general">General Report</option>
+                                    <option value="sales">Sales Report</option>
+                                    <option value="credits">Credits Report</option>
+                                    <option value="exp">Expenditure Report</option>
+                                </select>
+                                <!--end::Select-->
+                            </div>
+                            <input type="text" name="cashier" value="<?= $_SESSION['userID']; ?>" hidden />
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class=" fs-5 fw-bold mb-2">Start Date</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="datetime-local" placeholder="Product Quantity" name="startDate" />
+                                <!--end::Input-->
+
+                            </div>
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class=" fs-5 fw-bold mb-2">End Date</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="datetime-local" placeholder="Product Quantity" name="endDate" />
+                                <!--end::Input-->
+
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+
+                            <!--end::Input group-->
+
+                        </div>
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_new_address_cancel" class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" name="addProduct" id="kt_modal_new_address_submit" class="btn btn-primary">
+                            <span class="indicator-label">Generate Report</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+                <!--end::Form-->
+            </div>
+        </div>
+    </div>
+    <!--end::Modal - New Address-->
+<?php
+$most_sold_today = getMostFiveSold($sbs['bss']['business_id'], '2022-06-01');
+$soldItemName1 = 0;
+$soldItemName2 = 0;
+$soldItemName3 = 0;
+$soldItemName4 = 0;
+$soldItemName5 = 0;
+$soldItemQty1 = 0;
+$soldItemQty2 = 0;
+$soldItemQty3 = 0;
+$soldItemQty4 = 0;
+$soldItemQty5 = 0;
+if (is_array($most_sold_today)) {
+    if (count($most_sold_today) > 4) {
+        $itemSold1 = single_item("items", "WHERE item_id ='" . $most_sold_today['0']['item_id'] . "'");
+        $itemSold2 = single_item("items", "WHERE item_id ='" . $most_sold_today['1']['item_id'] . "'");
+        $itemSold3 =  single_item("items", "WHERE item_id ='" . $most_sold_today['2']['item_id'] . "'");
+        $itemSold4 =  single_item("items", "WHERE item_id ='" . $most_sold_today['3']['item_id'] . "'");
+        $itemSold5 =  single_item("items", "WHERE item_id ='" . $most_sold_today['4']['item_id'] . "'");
+        $soldItemName1 = $itemSold1['item_name'];
+        $soldItemName2 = $itemSold2['item_name'];
+        $soldItemName3 = $itemSold3['item_name'];
+        $soldItemName4 = $itemSold4['item_name'];
+        $soldItemName5 = $itemSold4['item_name'];
+        $soldItemQty1 = $most_sold_today['0']['total'] * $itemSold1['item_price'];
+        $soldItemQty2 = $most_sold_today['1']['total'] * $itemSold1['item_price'];
+        $soldItemQty3 = $most_sold_today['2']['total'] * $itemSold1['item_price'];
+        $soldItemQty4 = $most_sold_today['3']['total'] * $itemSold1['item_price'];
+        $soldItemQty5 = $most_sold_today['4']['total'] * $itemSold1['item_price'];
+    } else
+    if (count($most_sold_today) > 3) {
+        $itemSold1 = single_item("items", "WHERE item_id ='" . $most_sold_today['0']['item_id'] . "'");
+        $itemSold2 = single_item("items", "WHERE item_id ='" . $most_sold_today['1']['item_id'] . "'");
+        $itemSold3 =  single_item("items", "WHERE item_id ='" . $most_sold_today['2']['item_id'] . "'");
+        $itemSold4 =  single_item("items", "WHERE item_id ='" . $most_sold_today['3']['item_id'] . "'");
+        $soldItemName1 = $itemSold1['item_name'];
+        $soldItemName2 = $itemSold2['item_name'];
+        $soldItemName3 = $itemSold3['item_name'];
+        $soldItemName4 = $itemSold4['item_name'];
+        $soldItemQty1 = $most_sold_today['0']['total'] * $itemSold1['item_price'];
+        $soldItemQty2 = $most_sold_today['1']['total'] * $itemSold1['item_price'];
+        $soldItemQty3 = $most_sold_today['2']['total'] * $itemSold1['item_price'];
+        $soldItemQty4 = $most_sold_today['3']['total'] * $itemSold1['item_price'];
+    } elseif (count($most_sold_today) > 2) {
+        $itemSold1 = single_item("items", "WHERE item_id ='" . $most_sold_today['0']['item_id'] . "'");
+        $itemSold2 = single_item("items", "WHERE item_id ='" . $most_sold_today['1']['item_id'] . "'");
+        $itemSold3 =  single_item("items", "WHERE item_id ='" . $most_sold_today['2']['item_id'] . "'");
+        $soldItemName1 = $itemSold1['item_name'];
+        $soldItemName2 = $itemSold2['item_name'];
+        $soldItemName3 = $itemSold3['item_name'];
+        $soldItemQty1 = $most_sold_today['0']['total'] * $itemSold1['item_price'];
+        $soldItemQty2 = $most_sold_today['1']['total'] * $itemSold1['item_price'];
+        $soldItemQty3 = $most_sold_today['2']['total'] * $itemSold1['item_price'];
+    } elseif (count($most_sold_today) > 1) {
+        $itemSold1 = $item_data = single_item("items", "WHERE item_id ='" . $most_sold_today['0']['item_id'] . "'");
+        $itemSold2 = $item_data = single_item("items", "WHERE item_id ='" . $most_sold_today['1']['item_id'] . "'");
+        $soldItemName1 = $itemSold1['item_name'];
+        $soldItemName2 = $itemSold2['item_name'];
+        $soldItemQty1 = $most_sold_today['0']['total'] * $itemSold1['item_price'];
+        $soldItemQty2 = $most_sold_today['1']['total'] * $itemSold1['item_price'];
+    } else if (count($most_sold_today) == 1) {
+        $itemSold1 = $item_data = single_item("items", "WHERE item_id ='" . $most_sold_today['0']['item_id'] . "'");
+        $soldItemName1 = $itemSold1['item_name'];
+        $soldItemQty1 = $most_sold_today['0']['total'] * $itemSold1['item_price'];
+    } else {
+    }
+}
+// monthly reports
+?>
+<script>
+    $(document).ready(function() {
+        $('#getReport1').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=reports&s=getReport1',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+    var KTChartsWidget6 = function() {
+        // Private methods
+        var initChart = function() {
+            var element = document.getElementById("kt_charts_widget_6");
+
+            if (!element) {
+                return;
+            }
+
+            var labelColor = KTUtil.getCssVariableValue('--bs-gray-800');
+            var borderColor = KTUtil.getCssVariableValue('--bs-border-dashed-color');
+            var maxValue = 18;
+
+            var options = {
+                series: [{
+                    name: 'Sales',
+                    data: [<?= $soldItemQty1 ?>, <?= $soldItemQty2 ?>, <?= $soldItemQty3 ?>, <?= $soldItemQty4 ?>, <?= $soldItemQty5 ?>]
+                }],
+                chart: {
+                    fontFamily: 'inherit',
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 8,
+                        horizontal: true,
+                        distributed: true,
+                        barHeight: 50,
+                        dataLabels: {
+                            position: 'bottom' // use 'bottom' for left and 'top' for right align(textAnchor)
+                        }
+                    }
+                },
+                dataLabels: { // Docs: https://apexcharts.com/docs/options/datalabels/
+                    enabled: true,
+                    textAnchor: 'start',
+                    offsetX: 0,
+                    formatter: function(val, opts) {
+                        // var val = val * 1000;
+                        var Format = wNumb({
+                            //prefix: '$',
+                            //suffix: ',-',
+                            thousand: ','
+                        });
+
+                        return Format.to(val);
+                    },
+                    style: {
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        align: 'left',
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                colors: ['#3E97FF', '#F1416C', '#50CD89', '#FFC700', '#7239EA'],
+                xaxis: {
+                    categories: ["<?= $soldItemName1 ?>", "<?= $soldItemName2 ?>", '<?= $soldItemName3 ?>', '<?= $soldItemName4 ?>', '<?= $soldItemName5 ?>'],
+                    labels: {
+                        formatter: function(val, opts) {
+                            // var val = val * 1000;
+                            var Format = wNumb({
+                                //prefix: '$',
+                                //suffix: ',-',
+                                thousand: ','
+                            });
+
+                            // return Format.to(val) + " UGX 3";
+                        },
+
+                        style: {
+                            colors: labelColor,
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            align: 'left'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function(val, opt) {
+                            if (Number.isInteger(val)) {
+                                var percentage = parseInt(val * 100 / maxValue).toString();
+                                return val + ' - ' + percentage + '%';
+                            } else {
+                                return val;
+                            }
+                        },
+                        style: {
+                            colors: labelColor,
+                            fontSize: '14px',
+                            fontWeight: '600'
+                        },
+                        offsetY: 2,
+                        align: 'left'
+                    }
+                },
+                grid: {
+                    borderColor: borderColor,
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    strokeDashArray: 4
+                },
+                tooltip: {
+                    style: {
+                        fontSize: '12px'
+                    },
+                    y: {
+                        formatter: function(val, opts) {
+                            // var val = val * 1000;
+                            var Format = wNumb({
+                                //prefix: '$',
+                                //suffix: ',-',
+                                thousand: ','
+                            });
+
+                            return Format.to(val) + " UGX";
+                        },
+                    }
+                }
+            };
+
+            var chart = new ApexCharts(element, options);
+
+            // Set timeout to properly get the parent elements width
+            setTimeout(function() {
+                chart.render();
+            }, 200);
+        }
+
+        // Public methods
+        return {
+            init: function() {
+                initChart();
+            }
+        }
+    }();
+    if (typeof module !== 'undefined') {
+    module.exports = KTChartsWidget6;
+}
+</script>

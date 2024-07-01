@@ -70,7 +70,7 @@ scrollToTopButton.addEventListener('click', function () {
 // Show or hide the scroll-to-top button based on the scroll position
 window.addEventListener('scroll', function () {
     if (window.pageYOffset > 0) {
-        scrollToTopButton.style.display = 'block';
+        scrollToTopButton.style.display = 'flex';
     } else {
         scrollToTopButton.style.display = 'none';
     }
@@ -132,11 +132,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.notificationsTab li a');
 
+    navLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default link behavior
 
-// UPLOADING VIDEO INTO DB
-// script.js
-// handling video selection
+            // Get the target content ID from the data-target attribute
+            const targetId = this.getAttribute('data-target');
+
+            // Hide all content sections
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show the clicked content section
+            document.getElementById(targetId).classList.add('active');
+
+            // Set the active class on the clicked link
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+});
+
 // handling video selection
 const dropArea = document.getElementById("drop-area");
 const inputFile = document.getElementById("input-file");
@@ -183,15 +205,37 @@ function displayVideo(src) {
     imageView.appendChild(videoElement);
 }
 
-
-
-
 // Event listener to close the modal when clicking outside the modal content
 window.addEventListener('click', function(event) {
     const modal = document.getElementById('myModal');
     if (event.target === modal) {
         closeModal();
     }
+});
+
+// CREATOR PAGE
+function showTalentForm() {
+    document.getElementById('talent-form').classList.remove('hidden');
+    document.getElementById('message').classList.add('hidden');
+}
+
+function showMessage() {
+    document.getElementById('message').classList.remove('hidden');
+    document.getElementById('talent-form').classList.add('hidden');
+}
+
+// dark theme light theme toggler
+document.addEventListener('DOMContentLoaded', (event) => {
+    var icon = document.querySelector("#theme img");
+    icon.onclick = function () {
+        console.log("clicked");
+        document.body.classList.toggle("light-theme-variables");
+        if (document.body.classList.contains("light-theme-variables")) {
+            icon.src = "../images/dark theme icon/moon.png";
+        } else {
+            icon.src = "../images/dark theme icon/sun.png";
+        }
+    };
 });
 
 

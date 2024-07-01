@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $delete_status = "valid";
     $created_by = "self";
     $sex = $_POST['sex'];
+    $creator_status = "community";
 
     $email_validate = validate_user_email($email);
     $contact_validate = validate_user_phone($contact);
@@ -27,10 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($username_validate == "exists") {
         header("location: ../signup.php?error=Username+already+taken");
     } else {
-        $sql = "INSERT INTO `users`(`username`, `email`, `password`, `profile_picture`, `cover_picture`, `sex`,`contact`, `firstname`, `lastname`, `dob`, `delete_status`, `created_by`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO `users`(`username`, `email`, `password`, `profile_picture`, `cover_picture`, `sex`,`contact`, `firstname`, `lastname`, `dob`, `creator_status`, `delete_status`, `created_by`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $conn->prepare($sql);
         if ($stmt) {
-            $stmt->bind_param("ssssssssssss", $username, $email, $password, $profile_img, $cover_img, $sex, $contact, $firstName, $lastName, $dob, $delete_status, $created_by);
+            $stmt->bind_param("sssssssssssss", $username, $email, $password, $profile_img, $cover_img, $sex, $contact, $firstName, $lastName, $dob, $creator_status, $delete_status, $created_by);
             if ($stmt->execute()) {
                 header("location: ../signup.php?success=Your+account+has+been+created+successfully!+Login+with+your+email+and+password");
             } else {

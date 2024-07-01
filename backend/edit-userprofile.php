@@ -5,8 +5,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_POST['user_id'];
     $firstname = $_POST['fname'];
     $lastname = $_POST['lname'];
+    $about = $_POST['about'];
     
-    $update = updateUserProfile($user_id, $firstname, $lastname);
+    $update = updateUserProfile($user_id, $about, $firstname, $lastname);
 
     // Check if the update was successful
     if (strpos($update, 'successfully') !== false) {

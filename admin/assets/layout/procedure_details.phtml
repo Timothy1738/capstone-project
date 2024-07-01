@@ -1,0 +1,813 @@
+
+<!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <!-- begin::Invoice 1-->
+                        <div class="card">
+                            <!-- begin::Body-->
+                            <div class="card-body py-20">
+                                <!-- begin::Wrapper-->
+                                <?php if (empty($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->status)) { ?>
+                                 <button type="button" class="btn btn-success my-1 me-12">
+                                    <a href="index.php?page=procedure_orders&p=<?=$db->where('id', __secure($_GET['id']))->getOne('med_procedure')->id?>">Add Items</a>
+                                 </button>
+                             <?php } ?>
+                                <div class="mw-lg-950px mx-auto w-100">
+                                    <!-- begin::Header-->
+                                    <div id="printIt">
+                                        <div class="d-flex justify-content-between flex-column flex-sm-row mb-19">
+                                            <h4 class="fw-boldest text-gray-800 fs-2qx pe-5 pb-7">RECEIPT</h4>
+                                            <!--end::Logo-->
+                                            <div class="text-sm-end">
+                                                <!--begin::Logo-->
+                                                <a href="#">
+                                                    <!-- <img alt="Logo" src="assets/media/svg/brand-logos/duolingo.svg" /> -->
+                                                </a>
+
+                                                <!--end::Logo-->
+                                                <!--begin::Text-->
+                                                <div class="text-sm-end fw-bold fs-4 text-muted mt-7">
+                                                    <div><?php echo $sbs['bss']['b_name'] . " , " . $sbs['user']['tel'] ?>,</div>
+                                                    <div><?= $sbs['bss']['b_address'] ?></div>
+                                                </div>
+                                                <!--end::Text-->
+                                            </div>
+                                        </div>
+                                        <!--end::Header-->
+                                        <!--begin::Body-->
+                                        <div class="border-bottom pb-12">
+                                            <!--begin::Image-->
+                                            <!-- <div class="d-flex flex-row-fluid bgi-no-repeat bgi-position-x-center bgi-size-cover card-rounded h-150px h-lg-250px mb-lg-20" style="background-image: url(assets/media/misc/pattern-4.jpg)"></div> -->
+                                            <!--end::Image-->
+                                            <!--begin::Wrapper-->
+                                            <div class="d-flex justify-content-between flex-column flex-md-row">
+                                                <!--begin::Content-->
+                                                <div class="flex-grow-1 pt-8 mb-13">
+                                                    <!--begin::Table-->
+                                                    <div class="table-responsive border-bottom mb-14">
+                                                       <p><?= '<b>Customer Name : </b>'.$db->where('id', __secure($_GET['id']))->getOne('med_procedure')->customer_name.'<br><br><b>Procedure Title : </b>'.$db->where('id', __secure($_GET['id']))->getOne('med_procedure')->title.'<br><br><b>Procedure Description </b><br>'.$db->where('id', __secure($_GET['id']))->getOne('med_procedure')->description?></p>
+                                                       <div class="table-responsive">
+                                                    <!--begin::Table-->
+                                                    <br><br>
+                                                    <?php 
+                                                     $total = 0;
+                                                    if (!empty($db->where("o_business_id", $sbs['bss']['business_id'])->where("p_id", __secure($_GET['id']))->get("my_orders"))) {
+                                                     ?>
+                                                    <p><b>Bill Of Quantity</b></p>
+                                                    <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0">
+                                                        <!--begin::Table head-->
+                                                        <thead>
+                                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                                <th class="min-w-10px">S/No.</th>
+                                                                <th class="min-w-100px">Product</th>
+
+                                                                <th class="min-w-70px">Qty</th>
+                                                                <th class="min-w-100px text-end">Unit Price</th>
+                                                                <th class="min-w-100px text-end">Total</th>
+                                                                <th class="min-w-100px text-end">Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <!--end::Table head-->
+                                                        <!--begin::Table body-->
+                                                        <tbody class="fw-bold text-gray-600">
+                                                            <!--begin::Products-->
+                                                            <?php
+                                                            $num = 0;
+                                                            $total = 0;
+                                                            
+                                                            foreach ($db->where("o_business_id", $sbs['bss']['business_id'])->where("p_id",__secure($_GET['id']))->get("my_orders") as $order) :
+                                                                $itemData = single_item("items", "WHERE item_id = '" . $order->item_id . "'");
+                                                                $total += $itemData['item_price'] * $order->quantity;
+                                                            ?>
+                                                                <tr>
+                                                                    <!--begin::Product-->
+                                                                    <td><?= $num += 1 ?></td>
+                                                                    <td><?= $itemData['item_name'] ?></td>
+                                                                    <!--end::Product-->
+                                                                    <!--begin::SKU-->
+                                                                    <!--end::SKU-->
+                                                                    <!--begin::Quantity-->
+                                                                    <td class=""><?= $order->quantity ?></td>
+                                                                    <!--end::Quantity-->
+                                                                    <!--begin::Price-->
+                                                                    <td class="text-end">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></td>
+                                                                    <!--end::Price-->
+                                                                    <!--begin::Total-->
+                                                                    <td class="text-end">UGX: <?= number_format($itemData['item_price'] * $order->quantity, 0, '', ','); ?></td>
+                                                                    <!--end::Total-->
+                                                                    <td class="text-end">
+                                                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Edit Qty
+                                                        
+                                                    </a>
+                                                    <!--begin::Menu-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-225px " data-kt-menu="true">
+                                                        <form  class="edit_order_qty" method="post">
+                                                            <input type="text" value="<?= $order->id ?>" name="id" hidden />
+                                                            <input type="text" value="<?= $order->quantity ?>" name="old_qty" hidden />
+                                                             <input type="text" value="<?= $order->item_id ?>" name="item_id" hidden />
+
+                                                            <div class="d-flex flex-column mb-2 fv-row">
+                                                                <input class="form-control form-control-solid" type="text" value="<?= $order->quantity ?>" name="qty" />
+                                                                <!--end::Input-->
+                                                            </div>
+        
+                                                            <div class="modal-footer flex-center">
+
+                                                                <!--begin::Button-->
+                                                                <button type="submit" name="editOrder_qty" id="kt_modal_new_address_submit" class="btn btn-primary">
+                                                                    <span class="indicator-label">Edit</span>
+
+                                                                </button>
+                                                                <!--end::Button-->
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                       <a class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                        <span class='delete' data-id='<?= $order->id; ?>'>Delete</span>
+                                                    </a>
+                                                                    </td>
+                                                                    
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                            <!--end::Products-->
+                                                            <!--begin::Subtotal-->
+                                                            <tr>
+                                                                <td colspan="4" class="text-end">Subtotal</td>
+                                                                <td class="text-end subto">UGX: <?= number_format($total, 0, '', ','); ?></td>
+                                                            </tr>
+                                                            <!--end::Subtotal-->
+                                                            <!--begin::VAT-->
+                                                            <tr>
+                                                                <td colspan="4" class="text-end">VAT (0%)</td>
+                                                                <td class="text-end">UGX :0</td>
+                                                            </tr>
+                                                            <!--end::VAT-->
+                                                            <!--begin::Shipping-->
+                                                            <!-- <tr>
+                                                                <td colspan="4" class="text-end">Shipping Rate</td>
+                                                                <td class="text-end">$5.00</td>
+                                                            </tr> -->
+                                                            <!--end::Shipping-->
+                                                            <!--begin::Grand total-->
+                                                            <tr>
+                                                                <td colspan="4" class="fs-3 text-dark text-end ">Total</td>
+                                                                <td class="text-dark fs-3 fw-boldest text-end subto">UGX: <?= number_format($total, 0, '', ','); ?></td>
+                                                            </tr>
+                                                            <!--end::Grand total-->
+                                                        </tbody>
+                                                        <!--end::Table head-->
+                                                    </table>
+                                                    <!--end::Table-->
+
+                                                <?php } ?>
+                                                </div>
+                                                    </div>
+                                                    <!--end::Table-->
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex flex-column mw-md-300px w-100">
+                                                         <div class="d-flex flex-stack text-gray-800 mb-3 fs-6">
+                                                        <!--begin::Accountname-->
+                                                        <div class="fw-bold pe-5">Total Amount :</div>
+                                                        <!--end::Accountname-->
+                                                        <!--begin::Label-->
+                                                        <div class="text-end fw-norma">UGX: <?= number_format(($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount + $total), 0, '', ',') ; ?></div>
+                                                        <!--end::Label-->
+                                                    </div>
+                                                        <!--begin::Label-->
+                                                        <div class="fw-bold fs-5 mb-3 text-dark00">PAYMENT DETAILS</div>
+                                                        <!--end::Label-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex flex-stack text-gray-800 mb-3 fs-6">
+                                                            <!--begin::Accountname-->
+                                                            <div class="fw-bold pe-5">Mode Of Payment :</div>
+                                                            <!--end::Accountname-->
+                                                            <!--begin::Label-->
+                                                            <div class="text-end fw-norma">CASH</div>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex flex-stack text-gray-800 mb-3 fs-6">
+                                                            <!--begin::Accountnumber-->
+                                                            <div class="fw-bold pe-5">Received</div>
+                                                            <!--end::Accountnumber-->
+                                                            <!--begin::Number-->
+                                                            <div class="text-end fw-norma">UGX: <?= number_format($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->half_pay, 0, '', ','); ?></div>
+                                                            <!--end::Number-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex flex-stack text-gray-800 fs-6">
+                                                            <!--begin::Code-->
+                                                            <div class="fw-bold pe-5">Balance :</div>
+                                                            <!--end::Code-->
+                                                            <!--begin::Label-->
+                                                            <div class="text-end fw-norma">UGX: <?php if($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->half_pay > $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount + $total){
+                                                                echo number_format(($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->half_pay - $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount), 0, '', ','); 
+
+                                                            }else { echo number_format((($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount + $total )- $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->half_pay), 0, '', ','); 
+                                                                } ?>
+                                                            </div>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                </div>
+                                                <!--end::Content-->
+                                                <!--begin::Separator-->
+                                                <div class="border-end d-none d-md-block mh-450px mx-9"></div>
+                                                <!--end::Separator-->
+                                                <!--begin::Content-->
+                                                <div class="text-end pt-10">
+                                                    <!--begin::Total Amount-->
+                                                    <div class="fs-3 fw-bolder text-muted mb-3">TOTAL AMOUNT</div>
+                                                    <div class="fs-xl-2x fs-2 fw-boldest">UGX: <?= number_format(($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount + $total), 0, '', ','); ?></div>
+                                                    <!-- <div class="text-muted fw-bold">Taxes included</div> -->
+                                                    <!--end::Total Amount-->
+                                                    <div class="border-bottom w-100 my-7 my-lg-16"></div>
+                                                    <!--begin::Invoice To-->
+                                                    <div class="text-gray-600 fs-6 fw-bold mb-3">CASHIER</div>
+                                                    <div class="fs-6 text-gray-800 fw-bold mb-8"><?= $db->where('user_id', $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->cashier_id)->getOne('users')->firstname . " " . $db->where('user_id', $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->cashier_id)->getOne('users')->lastname ?>
+                                                        <br />
+                                                    </div>
+                                                    <!--end::Invoice To-->
+                                                    <!--begin::Invoice No-->
+                                                 
+                                                    <!--end::Invoice No-->
+                                                    <!--begin::Invoice Date-->
+                                                    <div class="text-gray-600 fs-6 fw-bold mb-3">DATE</div>
+                                                    <div class="fs-6 text-gray-800 fw-bold"><?= $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->date ?></div>
+                                                    <!--end::Invoice Date-->
+                                                </div>
+                                                <!--end::Content-->
+                                            </div>
+                                            <!--end::Wrapper-->
+                                        </div>
+                                    </div>
+                                    <!--end::Body-->
+                                  
+                                       
+                                            <!-- begin::Pint-->
+                                            <button onClick="printOut('printIt')" type="button" class="btn btn-success my-1 me-12"> Print Receipt </button>
+                                            <!-- end::Pint-->
+                                    <?php if (empty($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->status)) {
+                                     ?> 
+                                      <button type="button" data-bs-toggle="modal" data-bs-target=#kt_modal_new_address1 class="btn btn-success my-1 me-12">Edit Procedure</button>
+                                      <button type="button" id="<?= empty($total)?'delete':'delete2'?>" class="btn btn-danger my-1 me-12">Delete Procedure</button>
+                                    <?php } ?>
+                                    
+                                </div>
+                                <?php if (empty($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->status)) {
+                                     ?> 
+                                <!-- end::Wrapper-->
+                                 <div class="d-flex flex-column flex-xl-row gap-7 gap-lg-10">
+                                            <!--begin::Payment address-->
+                                            <div class="card card-flush py-4 flex-row-fluid overflow-hidden">
+                                                <!--begin::Background-->
+                                               
+                                                <!--end::Background-->
+                                                <!--begin::Card header-->
+                                                <div class="card-header">
+                                                    <div class="card-title">
+                                                        <h2>Clear Payment</h2>
+                                                    </div>
+                                                </div>
+                                                <!--end::Card header-->
+                                                <!--begin::Card body-->
+                                                <div class="card-body pt-0">
+                                                  
+                                                    <centre>
+                                                        <form class="form-control pay">
+                                                            <input type="text" name="id" value="<?= __secure($_GET['id']) ?>" hidden>
+                                                            <input type="text" name="total_amount" value="<?=($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount + $total) ?>" hidden>
+                                                            <!--begin::Input group-->
+                                                            <div class="d-flex flex-column mb-3 fv-row">
+                                                                <!--begin::Label-->
+                                                                <label class="required fs-5 fw-bold mb-2">Enter Amount Recevied</label>
+                                                                <!--end::Label-->
+                                                                <!--begin::Input-->
+                                                                <input class="form-control form-control-solid" type="number" placeholder="Amount Received From Customer" name="amount" />
+                                                                <!--end::Input-->
+                                                            </div>
+                                                            <!--end::Input group-->
+                                                            <!--end::Order details-->
+                                                            <div class="d-flex flex-column mb-3 fv-row">
+
+                                                                <!--begin::Button-->
+                                                                <button type="submit" name="confirmPay" class="btn btn-primary">
+                                                                    <span class="indicator-label">confirm Payment</span>
+                                                                    <span class="indicator-progress">Please wait...
+                                                                        <span class="spinner-border spinner-border-sm align-middle ms-5"></span></span>
+                                                                </button>
+                                                                <!--end::Button-->
+                                                            </div>
+                                                        </form>
+
+                                                    </centre>
+
+                                                </div>
+                                                <!--end::Card body-->
+
+                                            </div>
+
+                                             <!--begin::Button-->
+                                                                <button name="credit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target=#kt_modal_new_address>
+                                                                    <span class="indicator-label">Record
+                                         <br>Half Payment</span>
+                                                                    <span class="indicator-progress">Please wait...
+                                                                        <span class="spinner-border spinner-border-sm align-middle ms-5"></span></span>
+                                                                </button>
+                                                                <!--end::Button-->
+                                            <!--end::Payment address-->
+                                            <!--begin::Shipping address-->
+
+                                            <!--end::Shipping address-->
+                                        </div>
+                                    <?php } ?>
+                            </div>
+                            <!-- end::Body-->
+                        </div>
+                        <!-- end::Invoice 1-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
+                <!--begin::Modal - New Address-->
+    <div class="modal fade" id="kt_modal_new_address" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Form-->
+                <!-- <form class="form" action="#" id="kt_modal_new_address_form" method="post"> -->
+                <form class="form creditRecord">
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_new_address_header">
+                        <!--begin::Modal title-->
+                        <h2>Record Client Details</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                            <span class="svg-icon svg-icon-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                    <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Notice-->
+                            <!--begin::Notice-->
+                            <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-9 p-6">
+                                <!--begin::Icon-->
+                                <!--begin::Svg Icon | path: icons/duotune/general/gen044.svg-->
+                                Thank You For Choosing SBS, Record Your Credit Customer Details
+                                <!--end::Svg Icon-->
+                                <!--end::Icon-->
+                            </div>
+                            <!--end::Notice-->
+                            <!--end::Notice-->
+
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <input type="text" name="id" value="<?= __secure($_GET['id'])?>" hidden>
+                                <input type="text" name="amount" value="<?= ($db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount + $total )?>" hidden>
+                          
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                       
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="fs-5 fw-bold mb-2">Paid Amount</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="number" placeholder="Incase Of Half payment Enter amount received" name="half_pay"  />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+
+                            <!--end::Input group-->
+
+                        </div>
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_new_address_cancel" class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" name="addRecord" id="kt_modal_new_address_submit" class="btn btn-primary">
+                            <span class="indicator-label upload">Save Record</span>
+                            
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+                <!--end::Form-->
+            </div>
+        </div>
+    </div>
+    <!--end::Modal - New Address-->
+        <!--begin::Modal - New Address-->
+    <div class="modal fade" id="kt_modal_new_address1" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Form-->
+                <form class="form" id="editProcedure">
+                     <input type="text" name="id" value="<?= __secure($_GET['id'])?>" hidden>
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_new_address_header">
+                        <!--begin::Modal title-->
+                        <h2>Edit Procedure Record</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                            <span class="svg-icon svg-icon-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                    <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Notice-->
+                            <!--begin::Notice-->
+                        
+                            <!--end::Notice-->
+                            <!--end::Notice-->
+
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="required fs-5 fw-bold mb-2">Custome Names</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" value="<?= $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->customer_name?>" name="customer_name" />
+                                <!--end::Input-->
+                            </div>
+                             <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="required fs-5 fw-bold mb-2">Procedure Title</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" value="<?= $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->title?>" name="title" />
+                                <!--end::Input-->
+                            </div>
+                             <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="required fs-5 fw-bold mb-2">Description</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <textarea type="text" name="description" class="form-control mt-6 shadow-outline-none rounded py-10 px-5 text-[25px] font-bold" placeholder="Enter Procedure Description here"><?=$db->where('id', __secure($_GET['id']))->getOne('med_procedure')->description ?></textarea>
+                                <!--end::Input-->
+                            </div>
+                              <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="required fs-5 fw-bold mb-2">Amount To Be Charged</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" value="<?= $db->where('id', __secure($_GET['id']))->getOne('med_procedure')->amount?>" name="amount" />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+
+                            <!--end::Input group-->
+
+                        </div>
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_new_address_cancel" class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" name="addProduct" id="kt_modal_new_address_submit" class="btn btn-primary">
+                            <span class="indicator-label">Edit Procedure</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+                <!--end::Form-->
+            </div>
+        </div>
+    </div>
+    <!--end::Modal - New Address-->
+                <script>
+    function printOut(divId) {
+        var printOutContent = document.getElementById(divId).innerHTML;
+        var originalContent = document.body.innerHTML;
+        document.body.innerHTML = printOutContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    }
+    $(document).ready(function() {
+        $('.creditRecord').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=procedure&s=creditRecord',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+                    $('.upload').html('Uploading....');
+                    $('.upload').addClass('disabled');
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+                     $('.upload').html('Save Record');
+                    $('.upload').addClass('disabled');
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: "Recorded",
+                            icon: "success",
+                            buttonsStyling: !1,
+                            // confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                       
+
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+    $(document).ready(function() {
+        $('#editProcedure').on('submit', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: request()+'?f=procedure&s=edit',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+      $(document).ready(function() {
+        $('.pay').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=procedure&s=pay',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You To Receipt",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                        $('.orders').html(response.message);
+                        $('.total').html(response.total);
+                        $total = response.total;
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    })
+      $(document).ready(function() {
+        $('#delete').click(function(e) {
+            e.preventDefault();
+            var deleteid = <?=__secure($_GET['id']) ?>;
+            var confirmalert = confirm("Are you sure?!");
+            if (confirmalert == true) {
+             $.ajax({
+                url: request()+'?f=procedure&s=delete',
+                method: 'POST',
+                data: {
+                        id: deleteid
+                    },
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = 'index.php?page=procedure';;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+         }
+        });
+
+    })
+       $(document).ready(function() {
+        $('#delete2').click(function(e) {
+            e.preventDefault();
+            var confirmalert = confirm("Deleted Bill Of Quantity Items First!");
+            window.location.reload()
+      
+        });
+
+    })
+     $(document).ready(function() {
+        $('.edit_order_qty').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=procedure&s=edit_order_qty&p_no=<?=__secure($_GET['id'])?>',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+       $(document).ready(function() {
+
+        // Delete 
+        $('.delete').click(function() {
+            var el = this;
+
+            // Delete id
+            var deleteid = $(this).data('id');
+
+            var confirmalert = confirm("Are you sure ?");
+            if (confirmalert == true) {
+                // AJAX Request
+                $.ajax({
+                    url: request()+'?f=procedure&s=delOrder_item&p_no=<?= __secure($_GET['id'])?>',
+                    type: 'POST',
+                    data: {
+                        id: deleteid
+                    },
+                    success: function(response) {
+
+                        if (response.status == 200) {
+                             $('.subto').html(response.total);
+                             $('.subto').removeClass('disabled');
+                            // Remove row from HTML Table
+                            $(el).closest('tr').css('background', 'tomato');
+                            $(el).closest('tr').fadeOut(800, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert(response.message);
+                        }
+
+                    }
+                });
+            }
+
+        });
+
+    });
+</script>

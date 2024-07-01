@@ -1,0 +1,690 @@
+<?php
+
+$todayTime = getCurrentDateOnly();
+$day1 = $todayTime . ' 00:00:00';
+$day2 = $todayTime . ' 23:59:59';
+$day1 = $_GET['day1'];
+$day2 = $_GET['day2'];
+if ($sbs['bss']['b_type'] == 5 || $sbs['bss']['b_type'] == 6 || $sbs['bss']['b_type'] == 7 || $sbs['bss']['b_type'] == 11 ) {
+    $proce = getProcedureBetweenDays($day1, $day2, $sbs['bss']['business_id']);
+    $tatal_proce = 0;
+    $credit_proce = 0;
+    foreach($proce as $proc){
+        $tatal_proce += $proc['amount'];
+        if ($proc['status'] == 0) {
+            $credit_proce += ($proc['amount'] - $proc['half_pay']);
+        }
+    }
+}
+
+$total_sales = getTotalSalesBetweenDays($day1, $day2, $sbs['bss']['business_id'])['total_sales'];
+$total_cr = getTotalSalesBetweenDays($day1, $day2, $sbs['bss']['business_id'])['total_cr'];
+$total_exp = getTotalSalesBetweenDays($day1, $day2, $sbs['bss']['business_id'])['total_exp'];
+$total_pur = getTotalSalesBetweenDays($day1, $day2, $sbs['bss']['business_id'])['total_pur'];
+$total_profit = getTotalSalesBetweenDays($day1, $day2, $sbs['bss']['business_id'])['total_profit'];
+$net_profit = $total_sales - $total_cr - $total_exp - $total_pur;
+$report_type = $_GET['r'];
+$report_cashier = $_GET['ca'];
+$cashierID = $sbs['user']['user_id'];
+if($report_cashier != 'all'){
+$cashierID = $report_cashier;
+}
+$user_details = single_item("users", "WHERE user_id = '".$cashierID."'");
+$userType = "Cashier";
+if (empty($user_details['is_cashier'])) {
+$userType = "Admin";
+}
+if ($report_type == 'p') {
+$report =  "Purchases Report";
+$totalSales = 'Total Purchases = UGX : '.number_format($total_pur, 0, '', ',') ;
+$orders = getPurchasesBetweenDays($day1, $day2, $sbs['bss']['business_id']);
+}
+if ($report_type == 's' || $report_type == 'g') {
+$report =  "Sales Report";
+if ($report_type == 'g') {
+$report =  "General Report";
+}
+
+$orders = getSalesBetweenDays($day1, $day2, $sbs['bss']['business_id']);
+$totalSales = 'Total Sales = UGX : ' .$total_sales;
+if($report_cashier != 'all'){
+$orders = getSalesBetweenDaysByCashier($day1, $day2, $sbs['bss']['business_id'], $report_cashier);
+$totalSales = 'Total Sales = UGX : ' .getTotalSalesBetweenDaysByCashier($day1, $day2, $sbs['bss']['business_id'], $report_cashier)['total_sales'];
+}
+
+
+} elseif ($report_type == 'c') {
+$report =  "Credits Report";
+$orders = getCreditSalesBetweenDays($day1, $day2, $sbs['bss']['business_id']);
+$totalSales = 'Total Credits = UGX : ' . getTotalSalesBetweenDays($day1, $day2, $sbs['bss']['business_id'])['total_cr'];
+if($report_cashier != 'all'){
+$orders = getCreditSalesBetweenDaysByCashier($day1, $day2, $sbs['bss']['business_id'], $cashierID);
+$totalSales = 'Total Credits = UGX : ' . getTotalSalesBetweenDaysByCashier($day1, $day2, $sbs['bss']['business_id'], $cashierID)['total_cr'];
+}
+} else if ($report_type == 'e') {
+    $report =  "Expenditure Report";
+    $totalSales = 'Total Expenses = UGX : '.number_format($total_exp, 0, '', ',') ;
+    $exps = getExpBetweenDays($day1, $day2, $sbs['bss']['business_id']);
+}
+// $orders = getTodaysData("my_orders", "o_business_id", $sbs['bss']['business_id'], "created", getCurrentDateOnly());
+$page = "Reports";
+?>
+
+                    <!--begin::Content-->
+                    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                        <!--begin::Container-->
+                        <div class="container-xxl" id="kt_content_container">
+                            <div class="text-center mb-18">
+                                <!--begin::Title-->
+                                <h3 class="fs-2hx text-dark mb-6"><?= $sbs['bss']['b_name'] ?></h3>
+                                <!--end::Title-->
+                                <!--begin::Text-->
+                                <div class="fs-5 text-dark fw-bold"><?= $user_details['firstname'] . " " . $user_details['lastname'] . '( '.$userType.' )' ?><br /><?= $report ?>
+                                    <br /><?= 'From ' . date('Y-m-d g:iA', strtotime($day1)) . ' To ' . date('Y-m-d g:iA', strtotime($day2)) . '<br />' . $totalSales ?><br />
+                                </div>
+                                <!--end::Text-->
+                            </div>
+                            <!--begin::Products-->
+                            <div class="card card-flush">
+                                <!--begin::Card header-->
+                                <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                    <!--begin::Card title-->
+                                    <div class="card-title">
+                                        <!--begin::Search-->
+                                        <div class="d-flex align-items-center position-relative my-1">
+                                            <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                                            <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                                    <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                                                </svg>
+                                            </span>
+                                            <!--end::Svg Icon-->
+                                            <input type="text" data-kt-ecommerce-order-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Report" />
+                                        </div>
+                                        <!--end::Search-->
+                                        <!--begin::Export buttons-->
+                                        <div id="kt_ecommerce_report_sales_export" class="d-none"></div>
+                                        <!--end::Export buttons-->
+                                    </div>
+                                    <!--end::Card title-->
+                                    <!--begin::Card toolbar-->
+                                    <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                        <!--begin::Daterangepicker-->
+                                        <!--end::Daterangepicker-->
+                                        <!--begin::Export dropdown-->
+                                        <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr078.svg-->
+                                        <span class="svg-icon svg-icon-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.3" x="12.75" y="4.25" width="12" height="2" rx="1" transform="rotate(90 12.75 4.25)" fill="currentColor" />
+                                                <path d="M12.0573 6.11875L13.5203 7.87435C13.9121 8.34457 14.6232 8.37683 15.056 7.94401C15.4457 7.5543 15.4641 6.92836 15.0979 6.51643L12.4974 3.59084C12.0996 3.14332 11.4004 3.14332 11.0026 3.59084L8.40206 6.51643C8.0359 6.92836 8.0543 7.5543 8.44401 7.94401C8.87683 8.37683 9.58785 8.34458 9.9797 7.87435L11.4427 6.11875C11.6026 5.92684 11.8974 5.92684 12.0573 6.11875Z" fill="currentColor" />
+                                                <path d="M18.75 8.25H17.75C17.1977 8.25 16.75 8.69772 16.75 9.25C16.75 9.80228 17.1977 10.25 17.75 10.25C18.3023 10.25 18.75 10.6977 18.75 11.25V18.25C18.75 18.8023 18.3023 19.25 17.75 19.25H5.75C5.19772 19.25 4.75 18.8023 4.75 18.25V11.25C4.75 10.6977 5.19771 10.25 5.75 10.25C6.30229 10.25 6.75 9.80228 6.75 9.25C6.75 8.69772 6.30229 8.25 5.75 8.25H4.75C3.64543 8.25 2.75 9.14543 2.75 10.25V19.25C2.75 20.3546 3.64543 21.25 4.75 21.25H18.75C19.8546 21.25 20.75 20.3546 20.75 19.25V10.25C20.75 9.14543 19.8546 8.25 18.75 8.25Z" fill="#C4C4C4" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->Export Report
+                                        </button>
+                                        <!--begin::Menu-->
+                                        <div id="kt_ecommerce_report_sales_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-ecommerce-export="copy">Copy to clipboard</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-ecommerce-export="excel">Export as Excel</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-ecommerce-export="csv">Export as CSV</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                            <!--begin::Menu item-->
+                                            <div class="menu-item px-3">
+                                                <a href="#" class="menu-link px-3" data-kt-ecommerce-export="pdf">Export as PDF</a>
+                                            </div>
+                                            <!--end::Menu item-->
+                                        </div>
+                                        <!--end::Menu-->
+                                        <!--end::Export dropdown-->
+                                    </div>
+                                    <!--end::Card toolbar-->
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body pt-0">
+                                    <?php if ($report_type == 'g') { ?>
+                                    <!--begin: sales or credits :Table-->
+                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_report_sales_table">
+                                        <!--begin::Table head-->
+                                        <thead>
+                                            <!--begin::Table row-->
+                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                <th class="min-w-10px">S/No.</th>
+                                                <th class="min-w-50px">Date</th>
+                                                <th class="min-w-50px">Product Name</th>
+                                                <th class=" min-w-50px">Products Sold</th>
+                                                <th class="min-w-50px">Unit Price</th>
+                                                <th class="min-w-50px">Total Sales</th>
+                                                <th class="min-w-50px">@Item Profit/Loss</th>
+                                            </tr>
+                                            <!--end::Table row-->
+                                        </thead>
+                                        <!--end::Table head-->
+                                        <!--begin::Table body-->
+                                        <tbody class="fw-bold text-gray-600">
+                                            <!--begin::Table row-->
+                                            <?php
+                                            $num = 0;
+                                            foreach ($orders as $order) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+                                            ?>
+                                            <tr>
+                                                <td><?= $num += 1 ?></td>
+                                                <!--begin::Date=-->
+                                                <td><?= $order['created'] ?></td>
+                                                <!--end::Date=-->
+                                                <!--begin::No Orders=-->
+                                                <td class="pe-0"><?= $itemData['item_name'] ?></td>
+                                                <!--end::No Orders=-->
+                                                <!--begin::Products sold=-->
+                                                <td class="pe-0"><?= $order['quantity'] . ' ' . $itemData['units'] ?></td>
+                                                <!--end::Products sold=-->
+                                                <!--begin::Tax=-->
+                                                <td class="pe-0">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></td>
+                                                <!--end::Tax=-->
+                                                <!--begin::Total=-->
+                                                <td class="">UGX: <?= number_format($itemData['item_price'] * $order['quantity'], 0, '', ','); ?></td>
+                                                <td class="">UGX: <?= number_format(($itemData['item_price'] - $itemData['buying_price']) * $order['quantity'], 0, '', ','); ?></td>
+                                                <!--end::Total=-->
+                                            </tr>
+                                            <?php endforeach; ?>
+                                            <!--end::Table row-->
+                                            <!--end::Table row-->
+                                        </tbody>
+                                        <!--end::Table body-->
+                                    </table>
+                                    <!--end: sales or credits:Table-->
+                                    <?php } else if ($report_type == 's' || $report_type == 'c') { ?>
+                                    <!--begin: sales or credits :Table-->
+                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_report_sales_table">
+                                        <!--begin::Table head-->
+                                        <thead>
+                                            <!--begin::Table row-->
+                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                <th class="min-w-10px">S/No.</th>
+                                                <th class="min-w-50px">Date</th>
+                                                <th class="min-w-50px">Product Name</th>
+                                                <th class=" min-w-50px">Products Sold</th>
+                                                <th class="min-w-50px">Unit Price</th>
+                                                <th class="min-w-50px">Total</th>
+                                            </tr>
+                                            <!--end::Table row-->
+                                        </thead>
+                                        <!--end::Table head-->
+                                        <!--begin::Table body-->
+                                        <tbody class="fw-bold text-gray-600">
+                                            <!--begin::Table row-->
+                                            <?php
+                                            $num = 0;
+                                            foreach ($orders as $order) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+                                            ?>
+                                            <tr>
+                                                <td><?= $num += 1 ?></td>
+                                                <!--begin::Date=-->
+                                                <td><?= $order['created'] ?></td>
+                                                <!--end::Date=-->
+                                                <!--begin::No Orders=-->
+                                                <td class="pe-0"><?= $itemData['item_name'] ?></td>
+                                                <!--end::No Orders=-->
+                                                <!--begin::Products sold=-->
+                                                <td class="pe-0"><?= $order['quantity'] . ' ' . $itemData['units'] ?></td>
+                                                <!--end::Products sold=-->
+                                                <!--begin::Tax=-->
+                                                <td class="pe-0">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></td>
+                                                <!--end::Tax=-->
+                                                <!--begin::Total=-->
+                                                <td class="">UGX: <?= number_format($itemData['item_price'] * $order['quantity'], 0, '', ','); ?></td>
+                                                <!--end::Total=-->
+                                            </tr>
+                                            <?php endforeach; ?>
+                                            <!--end::Table row-->
+                                            <!--end::Table row-->
+                                        </tbody>
+                                        <!--end::Table body-->
+                                    </table>
+                                    <!--end: sales or credits:Table-->
+                                    <?php } else if ($report_type == 'p') { ?>
+                                    <!--begin: exp :Table-->
+                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_report_sales_table">
+                                        <!--begin::Table head-->
+                                        <thead>
+                                            <!--begin::Table row-->
+                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                               <th class="min-w-10px">S/No.</th>
+                                            <th class="min-w-100px">Product Name</th>
+                                            <th class="min-w-100px">Quantity</th>
+                                            <th class="min-w-100px">Buying Price</th>
+                                            <th class="min-w-100px">Total Amount</th>
+                                            <th class="min-w-125px">Created Date</th>
+                                            <th class="min-w-100px">Supplier</th>
+                                            </tr>
+                                            <!--end::Table row-->
+                                        </thead>
+                                        <!--end::Table head-->
+                                        <!--begin::Table body-->
+                                        <tbody class="fw-bold text-gray-600">
+                                            <!--begin::Table row-->
+                                            <?php
+                                            $num = 0;
+                                            foreach ($orders as $pur) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $pur['p_item_id'] . "'");
+                                            ?>
+                                            <tr>
+                                                <td><?= $num += 1 ?></td>
+                                                <!--begin::Date=-->
+                                                <td>
+                                                    <a href="details.html" class="text-gray-800 text-hover-primary mb-1"><?= $itemData['item_name'] ?></a>
+                                                </td>
+                                                <!--end::Name=-->
+                                                <!--begin::Email=-->
+                                                <td>
+                                                    <a href="#" class="text-gray-600 text-hover-primary mb-1"><?= $pur['p_quantity'] ?></a>
+                                                </td>
+                                                <!--end::Email=-->
+                                                <!--begin::Status=-->
+                                                <td>UGX: <?= number_format($itemData['buying_price'], 0, '', ','); ?></td>
+                                                <!--end::Status=-->
+                                                <!--begin::IP Address=-->
+                                                <td>UGX: <?= number_format($itemData['buying_price'] * $pur['p_quantity'], 0, '', ','); ?></td>
+                                                <!--begin::Date=-->
+                                                <td><?= $pur['p_date'] ?></td>
+                                                 <td><?php
+                                                    if ($pur['p_supplier'] == null) {
+                                                        echo "Not Defined";
+                                                    } else {
+                                                        echo $pur['p_supplier'];
+                                                    }
+                                                    ?></td>
+                                                <!--end::Total=-->
+                                            </tr>
+                                            <?php endforeach; ?>
+                                            <!--end::Table row-->
+                                            <!--end::Table row-->
+                                        </tbody>
+                                        <!--end::Table body-->
+                                    </table>
+                                    <!--end: exp:Table-->
+                                    <?php } else if ($report_type == 'e') { ?>
+                                    <!--begin: exp :Table-->
+                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_report_sales_table">
+                                        <!--begin::Table head-->
+                                        <thead>
+                                            <!--begin::Table row-->
+                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                <th class="min-w-10px">S/No.</th>
+                                                <th class="min-w-50px">Date</th>
+                                                <th class="min-w-50px">Expense Name</th>
+                                                <th class=" min-w-100px">Description</th>
+                                                <th class="min-w-50px">Amount</th>
+                                            </tr>
+                                            <!--end::Table row-->
+                                        </thead>
+                                        <!--end::Table head-->
+                                        <!--begin::Table body-->
+                                        <tbody class="fw-bold text-gray-600">
+                                            <!--begin::Table row-->
+                                            <?php
+                                            $num = 0;
+                                            foreach ($exps as $exp) :
+                                            // $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+                                            ?>
+                                            <tr>
+                                                <td><?= $num += 1 ?></td>
+                                                <!--begin::Date=-->
+                                                <td><?= $exp['e_created'] ?></td>
+                                                <!--end::Date=-->
+                                                <!--begin::No Orders=-->
+                                                <td class="pe-0"><?= $exp['exp_name'] ?></td>
+                                                <!--end::No Orders=-->
+                                                <!--begin::Products sold=-->
+                                                <td class="pe-0"><?= $exp['exp_description'] ?></td>
+                                                <!--end::Products sold=-->
+                                                <!--begin::Total=-->
+                                                <td class="">UGX: <?= number_format($exp['amount'], 0, '', ','); ?></td>
+                                                <!--end::Total=-->
+                                            </tr>
+                                            <?php endforeach; ?>
+                                            <!--end::Table row-->
+                                            <!--end::Table row-->
+                                        </tbody>
+                                        <!--end::Table body-->
+                                    </table>
+                                    <!--end: exp:Table-->
+                                    <?php } ?>
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <!--end::Products-->
+                            <div style="margin: 10px;"></div>
+                            <div id="printIt" style="font-weight: 800; color: currentColor; font-size: 100%; background-color: lightblue; margin: 5%; padding: 5%; border-radius: 10px; align-content: center; align-items: center;">
+                                <centre>
+                                <h2><?= $sbs['bss']['b_name'] . '\'S Business Performance Summary From; <br/>' . date('Y-m-d g:iA', strtotime($day1)) . ' To ' . date('Y-m-d g:iA', strtotime($day2)) ?></h2>
+                                </centre>
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                Total Sales
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                = Shs.
+                                                <?php
+                                                if ($total_sales < 0) {
+                                                echo '<span style="color: red;">' . number_format($total_sales, 0, '', ',') . '</span>';
+                                                } else {
+                                                echo number_format($total_sales, 0, '', ',');
+                                                }
+                                                ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                Total Credits
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                = Shs.<?= number_format($total_cr, 0, '', ','); ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                Total Purchases
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                = Shs.<?= number_format($total_pur, 0, '', ',');  ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                Total Expenditure
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                = Shs.<?= number_format($total_exp, 0, '', ',');  ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                Total Profits:
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                = Shs.
+                                                <?php
+                                                if ($total_profit < 0) {
+                                                echo '<span style="color: red;">' . number_format($total_profit, 0, '', ',') . '</span>';
+                                                } else {
+                                                echo number_format($total_profit, 0, '', ',');
+                                                }
+                                                ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                ------------------
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                ------------------
+                                            </td>
+                                        </th>
+                                    </tr>
+                                    <!--<tr>-->
+                                    <!--    <th>-->
+                                    <!--        <td>-->
+                                    <!--            Net Profit:-->
+                                    <!--        </td>-->
+                                    <!--    </th>-->
+                                    <!--    <th>-->
+                                    <!--        <td>-->
+                                    <!--            = Shs.-->
+                                    <!--            <?php-->
+                                    <!--            if ($net_profit < 0) {-->
+                                    <!--            echo '<span style="color: red;">' . number_format($net_profit, 0, '', ',') . '</span>';-->
+                                    <!--            } else {-->
+                                    <!--            echo '<span style="color: green;">' . number_format($net_profit, 0, '', ',') . '</span>';-->
+                                    <!--            }-->
+                                    <!--            ?>-->
+                                    <!--        </td>-->
+                                    <!--    </th>-->
+                                    <!--</tr>-->
+
+                                    <?php 
+                                    if ($sbs['bss']['b_type'] == 5 || $sbs['bss']['b_type'] == 6 || $sbs['bss']['b_type'] == 7 || $sbs['bss']['b_type'] == 11 ) {
+                                    ?>
+                                    <br><br>
+                                    <tr>
+                                        <th>
+                                            <td>
+                                                Procedure Earnings
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                
+                                            </td>
+                                        </th>
+                                    </tr>
+                                     <tr>
+                                        <th>
+                                            <td>
+                                                Total Procedure Amounts
+                                            </td>
+                                        </th> 
+                                        <th>
+                                            <td>
+                                                <?= $tatal_proce ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                     <tr>
+                                        <th>
+                                            <td>
+                                                 Tatal Procedure Credits
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                <?= $credit_proce ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+                                     <tr>
+                                        <th>
+                                            <td>
+                                                 Net Procedure Amount
+                                            </td>
+                                        </th>
+                                        <th>
+                                            <td>
+                                                <?= $tatal_proce - $credit_proce ?>
+                                            </td>
+                                        </th>
+                                    </tr>
+
+                                <?php } ?>
+                                </table>
+                                <br>
+                                <button onClick="printOut('printIt')" class="btn btn-purple waves-effect waves-light d-print-none"> <span>Print Summary</span> <i class="fa fa-print"></i> </button>
+                            </div>
+                        </div>
+                        <!--end::Container-->
+                    </div>
+                    <!--end::Content-->
+                    
+<script>
+function printDiv() {
+var divContents = document.getElementById("GFG").innerHTML;
+var a = window.open('', '', '');
+a.document.write('<html>');
+    a.document.write('<body > <h1>Thank You For Choosing SBS <br>');
+        a.document.write(divContents);
+    a.document.write('</body></html>');
+    a.document.close();
+    a.print();
+    }
+    function printOut(divId) {
+    var printOutContent = document.getElementById(divId).innerHTML;
+    var originalContent = document.body.innerHTML;
+    document.body.innerHTML = printOutContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+    }
+    "use strict";
+
+// Class definition
+var KTAppEcommerceReportSales = function () {
+    // Shared variables
+    var table;
+    var datatable;
+
+    // Private functions
+    var initDatatable = function () {
+        // Set date data order
+        const tableRows = table.querySelectorAll('tbody tr');
+
+        tableRows.forEach(row => {
+            const dateRow = row.querySelectorAll('td');
+            const realDate = moment(dateRow[0].innerHTML, "MMM DD, YYYY").format(); // select date from 4th column in table
+            dateRow[0].setAttribute('data-order', realDate);
+        });
+
+
+        // Init datatable --- more info on datatables: https://datatables.net/manual/
+        datatable = $(table).DataTable({
+            "info": false,
+            'order': [],
+            'pageLength': 10,
+        });
+    }
+
+    // Init daterangepicker
+    var initDaterangepicker = () => {
+        var start = moment().subtract(29, "days");
+        var end = moment();
+        var input = $("#kt_ecommerce_report_sales_daterangepicker");
+
+        function cb(start, end) {
+            input.html(start.format("MMMM D, YYYY") + " - " + end.format("MMMM D, YYYY"));
+        }
+
+        input.daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                "Today": [moment(), moment()],
+                "Yesterday": [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                "This Month": [moment().startOf("month"), moment().endOf("month")],
+                "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+            }
+        }, cb);
+
+        cb(start, end);
+    }
+
+    // Hook export buttons
+    var exportButtons = () => {
+        const documentTitle = "<?=  $sbs['bss']['b_name']." \' ".$report .'\n Total Sales = UGX: '.$total_sales?>";
+        var buttons = new $.fn.dataTable.Buttons(table, {
+            buttons: [
+                {
+                    extend: 'copyHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'excelHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'csvHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: documentTitle
+                }
+            ]
+        }).container().appendTo($('#kt_ecommerce_report_sales_export'));
+
+        // Hook dropdown menu click event to datatable export buttons
+        const exportButtons = document.querySelectorAll('#kt_ecommerce_report_sales_export_menu [data-kt-ecommerce-export]');
+        exportButtons.forEach(exportButton => {
+            exportButton.addEventListener('click', e => {
+                e.preventDefault();
+
+                // Get clicked export value
+                const exportValue = e.target.getAttribute('data-kt-ecommerce-export');
+                const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                // Trigger click event on hidden datatable export buttons
+                target.click();
+            });
+        });
+    }
+
+
+    // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
+    var handleSearchDatatable = () => {
+        const filterSearch = document.querySelector('[data-kt-ecommerce-order-filter="search"]');
+        filterSearch.addEventListener('keyup', function (e) {
+            datatable.search(e.target.value).draw();
+        });
+    }
+
+    // Public methods
+    return {
+        init: function () {
+            table = document.querySelector('#kt_ecommerce_report_sales_table');
+
+            if (!table) {
+                return;
+            }
+
+            initDatatable();
+            initDaterangepicker();
+            exportButtons();
+            handleSearchDatatable();
+        }
+    };
+}();
+
+// On document ready
+KTUtil.onDOMContentLoaded(function () {
+    KTAppEcommerceReportSales.init();
+});
+
+    </script>

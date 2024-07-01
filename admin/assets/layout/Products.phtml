@@ -1,0 +1,223 @@
+    <!-- new -->
+   
+   
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+   
+    <!-- new -->
+<?php
+$products = get_data("items", "WHERE i_business_id = '" . $sbs['bss']['business_id'] . "'");
+?>
+ 
+
+<!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                         <div class="text-center mb-18">
+                            <!--begin::Title-->
+                            <h3 class="fs-2hx text-dark mb-6"><?= $sbs['bss']['b_name'] ?></h3>
+                            <!--end::Title-->
+                            <!--begin::Text-->
+                            <div class="fs-5 text-dark fw-bold">Stock Items
+                               
+                            </div>
+                            <!--end::Text-->
+
+                        </div>
+                        <!--begin::Products-->
+                        <div class="card card-flush">
+                            <!--begin::Card header-->
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <!--begin::Card title-->
+            
+                               
+                                <!--begin::Card toolbar-->
+                                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+
+                                    <!--begin::Add product-->
+                                    <a href="index.php?page=addProduct" class="btn btn-primary er fs-6 px-8 py-4">Add Product</a>
+                                    <!--end::Add product-->
+                                </div>
+                                <!--end::Card toolbar-->
+                            </div>
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <!--begin::Table-->
+                                <table class="table align-middle table-row-dashed fs-6 gy-5" id="examplle">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <!--begin::Table row-->
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+
+                                            <th class="min-w-30px">S/No.</th>
+                                            <th class="min-w-100px">Product</th>
+                                            <th class="min-w-10px">Units</th>
+                                            <th class="min-w-50px">Category</th>
+                                            <th class="min-w-50px">Brand</th>
+                                            <th class="min-w-80px">Buying Price</th>
+                                            <th class="min-w-80px">Selling Price</th>
+                                            <th class="min-w-100px">Date Added</th>
+                                            <th class=" min-w-100px">Actions</th>
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody class="fw-bold text-gray-600">
+                                        <!--begin::Table row-->
+                                        <?php
+                                        $num = 0;
+                                        foreach ($products as $product) :
+                                            $cat_data = getOneItem("categories", "c_business_id", $sbs['bss']['business_id'], "category_id", $product['i_category_id']);
+                                            $brand_data = getOneItem("brand", "b_business_id", $sbs['bss']['business_id'], "brand_id", $product['i_brand_id']);
+                                        ?>
+                                            <tr>
+                                                <!--begin::Checkbox-->
+                                                <td><?= $num += 1 ?></td>
+                                                <!--end::Checkbox-->
+                                                <!--begin::Customer=-->
+                                                <td><?= $product['item_name'] ?></td>
+                                                <!--end::Customer=-->
+                                                <td><?= $product['units'] ?></td>
+                                                <!--begin::Status=-->
+                                                <td><?php if (empty($product['i_category_id'])) {
+                                                    echo "Not Defined";
+                                                }else{
+                                                    echo $cat_data['c_name'];
+                                                }  ?>
+                                                </td>
+                                                <td><?php if (empty($product['i_brand_id'])) {
+                                                    echo "Not Defined";
+                                                }else{
+                                                    echo $brand_data['brand_name'];
+                                                }  ?></td>
+                                                <!--end::Status=-->
+                                                <!--begin::Order ID=-->
+                                                <td class=" pe-0">
+                                                    <span class="fw-bolder">UGX: <?= number_format($product['buying_price'], 0, '', ',') ?></span>
+                                                </td>
+                                                <!--end::Order ID=-->
+                                                <!--begin::Total=-->
+                                                <td class=" pe-0">
+                                                    <span class="fw-bolder">UGX: <?= number_format($product['item_price'], 0, '', ',') ?></span>
+                                                </td>
+                                                <!--end::Total=-->
+                                                <!--begin::Date Added=-->
+                                                <td class="text-end" data-order="2022-05-31">
+                                                    <span class="fw-bolder"><?= $product['i_craeted'] ?></span>
+                                                </td>
+                                                <!--end::Date Added=-->
+
+                                                <!--begin::Action=-->
+                                                <td >
+                                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
+                                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                                        <span class="svg-icon svg-icon-5 m-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                                            </svg>
+                                                        </span>
+                                                        <!--end::Svg Icon-->
+                                                    </a>
+                                                    <!--begin::Menu-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                                        <!--begin::Menu item-->
+                                                        <!--end::Menu item-->
+                                                        <!--begin::Menu item-->
+                                                        <div class="menu-item px-3">
+                                                            <a href="index.php?page=editProduct&updateID=<?= $product['item_id'] ?>" class="menu-link px-3">Edit</a>
+                                                        </div>
+                                                        <!--end::Menu item-->
+                                                        <!--begin::Menu item-->
+                                                        <div class="menu-item px-3">
+
+                                                            <a class="menu-link px-3 delete" data-id='<?= $product['item_id']; ?>' data-kt-ecommerce-order-filter="delete_row">Delete</a>
+                                                        </div>
+                                                        <!--end::Menu item-->
+                                                    </div>
+                                                    <!--end::Menu-->
+                                                </td>
+                                                <!--end::Action=-->
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        <!--end::Table row-->
+
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                         
+                        <!--end::Products-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        // Delete 
+        $('.delete').click(function() {
+            var el = this;
+
+            // Delete id
+            var deleteid = $(this).data('id');
+
+            var confirmalert = confirm("Are you sure?!");
+            if (confirmalert == true) {
+                // AJAX Request
+                $.ajax({
+                    url: request()+'?f=products&s=delPro',
+                    type: 'POST',
+                    data: {
+                        id: deleteid
+                    },
+                    success: function(response) {
+
+                        if (response.status == 200) {
+                            // Remove row from HTML Table
+                            $(el).closest('tr').css('background', 'tomato');
+                            $(el).closest('tr').fadeOut(800, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert(response.message);
+                        }
+
+                    }
+                });
+            }
+
+        });
+
+    });
+        $(function () {
+            $('#examplle').DataTable({
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'exportExcel',
+                    filename: '<?=$sbs['bss']['b_name']?> Products',
+                    exportOptions: { modifier: { page: 'all'} }
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'exportExcel',
+                    filename: '<?=$sbs['bss']['b_name']?> Products',
+                    exportOptions: { modifier: { page: 'all'} }
+                }]
+            });
+  
+        });
+    </script>

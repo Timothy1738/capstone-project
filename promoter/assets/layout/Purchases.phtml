@@ -1,0 +1,710 @@
+ <?php
+$today = getCurrentDate();
+$todayTime = getCurrentDateOnly();
+if (isset($_GET['date'])) {
+    $today = __secure($_GET['date']);
+    $todayTime = __secure($_GET['date']);
+}
+
+
+$day1 = $todayTime . ' 00:00:00';
+$day2 = $todayTime . ' 23:59:59';
+$report = "Purchases ";
+$totalOrders = 0;
+$p_business_id = $p_item_id = $p_quantity = $p_date = "";
+$all_purchases = getTodayPurchases($sbs['bss']['business_id'], $todayTime);
+foreach ($all_purchases as $pur) {
+$itemData = single_item("items", "WHERE item_id = '" . $pur['p_item_id'] . "'");
+$totalOrders += $itemData['buying_price'] * $pur['p_quantity'];
+}
+$products = get_data("items", "WHERE i_business_id ='" . $sbs['bss']['business_id'] . "'");
+
+?>
+
+  <!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <div class="text-center mb-18">
+                            <!--begin::Title-->
+                            <h3 class="fs-2hx text-dark mb-6"><?= $sbs['bss']['b_name'] ?></h3>
+                            <!--end::Title-->
+                            <!--begin::Text-->
+                            <div class="fs-5 text-dark fw-bold"><?= $report ?>
+                                <br /><?php if (isset($_GET['date'])) {
+                                    echo 'As At : ' . date('d/m/Y', strtotime(date(__secure($_GET['date'])))) . '<br />Total Amounts =.UGX:  ' . number_format($totalOrders, 0, '', ','); 
+                                }else{
+
+                                echo 'As At : ' . date('d/m/Y g:iA', strtotime(date('Y-m-d g:ia'))) . '<br />Total Amounts =.UGX:  ' . number_format($totalOrders, 0, '', ','); 
+                            } ?><br />
+                            </div>
+                            <!--end::Text-->
+
+                        </div>
+                        <!--begin::Products-->
+                        <div class="card card-flush">
+                            <!--begin::Card header-->
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <!--begin::Card title-->
+                                <div class="card-title">
+                                    <!--begin::Search-->
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                                        <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <input type="text" data-kt-ecommerce-order-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Item" />
+                                    </div>
+                                  
+                                    <!--end::Search-->
+                                    <!--begin::Export buttons-->
+                                    <div id="kt_ecommerce_report_sales_export" class="d-none"></div>
+                                    <!--end::Export buttons-->
+                                </div>
+                                 <!--begin::Actions-->
+                                            <div class="d-flex my-4">
+
+
+                                                <!--begin::Menu-->
+                                                <div class="me-0">
+                                                    <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                        <i class="bi bi-three-dots fs-3"></i>
+                                                    </button>
+                                                    <!--begin::Menu 3-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold w-200px py-3" data-kt-menu="true">
+                                                        <!--begin::Heading-->
+                                                        <div class="menu-item px-3">
+                                                            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Check Previous Purchases</div>
+                                                        </div>
+                                                        <!--end::Heading-->
+                                                        <form class="form checkPrev">
+                                                        <!--begin::Menu item-->
+                                                          <div class="d-flex flex-column mb-5 fv-row">
+                                                            <!--begin::Label-->
+                                                            <!--end::Label-->
+                                                            <!--begin::Input-->
+                                                            <input class="form-control" type="date" name="date" />
+                                                            <!--end::Input-->
+
+                                                        </div>
+                                                        <div class="menu-item px-3">
+                                                            <button type="submit" class="btn btn-light-primary">Check Purchases</button>
+                                                          
+                                                        </div>
+                                                        </form>
+                                                        <!--end::Menu item-->
+
+                                                    </div>
+                                                    <!--end::Menu 3-->
+                                                </div>
+                                                <!--end::Menu-->
+                                            </div>
+                                <!--end::Card title-->
+
+                                <!--begin::Card toolbar-->
+                                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                    <!--begin::Daterangepicker-->
+                                    <!--begin::Add product-->
+                                    <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="" data-bs-original-title="click to add New Purchase">
+                                    <a data-bs-toggle="modal" data-bs-target="#kt_modal_new_address" href="index.php?page=addProcedure" class="btn btn-primary">Add Purchase</a>
+                                </div>
+                                    <!--end::Add product-->
+                                    
+                                    <!--end::Daterangepicker-->
+                                    <!--begin::Export dropdown-->
+                                    <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr078.svg-->
+                                        <span class="svg-icon svg-icon-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.3" x="12.75" y="4.25" width="12" height="2" rx="1" transform="rotate(90 12.75 4.25)" fill="currentColor" />
+                                                <path d="M12.0573 6.11875L13.5203 7.87435C13.9121 8.34457 14.6232 8.37683 15.056 7.94401C15.4457 7.5543 15.4641 6.92836 15.0979 6.51643L12.4974 3.59084C12.0996 3.14332 11.4004 3.14332 11.0026 3.59084L8.40206 6.51643C8.0359 6.92836 8.0543 7.5543 8.44401 7.94401C8.87683 8.37683 9.58785 8.34458 9.9797 7.87435L11.4427 6.11875C11.6026 5.92684 11.8974 5.92684 12.0573 6.11875Z" fill="currentColor" />
+                                                <path d="M18.75 8.25H17.75C17.1977 8.25 16.75 8.69772 16.75 9.25C16.75 9.80228 17.1977 10.25 17.75 10.25C18.3023 10.25 18.75 10.6977 18.75 11.25V18.25C18.75 18.8023 18.3023 19.25 17.75 19.25H5.75C5.19772 19.25 4.75 18.8023 4.75 18.25V11.25C4.75 10.6977 5.19771 10.25 5.75 10.25C6.30229 10.25 6.75 9.80228 6.75 9.25C6.75 8.69772 6.30229 8.25 5.75 8.25H4.75C3.64543 8.25 2.75 9.14543 2.75 10.25V19.25C2.75 20.3546 3.64543 21.25 4.75 21.25H18.75C19.8546 21.25 20.75 20.3546 20.75 19.25V10.25C20.75 9.14543 19.8546 8.25 18.75 8.25Z" fill="#C4C4C4" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->Export Report
+                                    </button>
+                                    <!--begin::Menu-->
+                                    <div id="kt_ecommerce_report_sales_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-200px py-4" data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-ecommerce-export="copy">Copy to clipboard</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-ecommerce-export="excel">Export as Excel</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-ecommerce-export="csv">Export as CSV</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3" data-kt-ecommerce-export="pdf">Export as PDF</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                    </div>
+                                    <!--end::Menu-->
+                                    <!--end::Export dropdown-->
+                                </div>
+                                <!--end::Card toolbar-->
+                            </div>
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <!--begin::Table-->
+                             
+                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_report_sales_table">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <!--begin::Table row-->
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-10px">S/No.</th>
+                                            <th class="min-w-100px">Product Name</th>
+                                            <th class="min-w-100px">Quantity</th>
+                                            <th class="min-w-100px">Buying Price</th>
+                                            <th class="min-w-100px">Total Amount</th>
+                                            <th class="min-w-125px">Created Date</th>
+                                            <th class="min-w-100px">Supplier</th>
+                                            <?php if(!isset($_GET['date'])) {?>
+                                                <th class="text-end min-w-70px">Actions</th>
+                                          <?php } ?>
+                                            
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody class="fw-bold text-gray-600">
+                                        <!--begin::Table row-->
+                                        <?php
+                                        $num = 0;
+                                         foreach ($all_purchases as $pur) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $pur['p_item_id'] . "'");
+
+                                        ?>
+                                             <tr>
+                                                <!--begin::Checkbox-->
+                                                <td>
+                                                    <?= $num += 1 ?>
+                                                </td>
+                                                <!--end::Checkbox-->
+                                                <!--begin::Name=-->
+                                                <td>
+                                                    <a href="details.html" class="text-gray-800 text-hover-primary mb-1"><?= $itemData['item_name'] ?></a>
+                                                </td>
+                                                <!--end::Name=-->
+                                                <!--begin::Email=-->
+                                                <td>
+                                                    <a href="#" class="text-gray-600 text-hover-primary mb-1"><?= $pur['p_quantity'] ?></a>
+                                                </td>
+                                                <!--end::Email=-->
+                                                <!--begin::Status=-->
+                                                <td>UGX: <?= number_format($itemData['buying_price'], 0, '', ','); ?></td>
+                                                <!--end::Status=-->
+                                                <!--begin::IP Address=-->
+                                                <td>UGX: <?= number_format($itemData['buying_price'] * $pur['p_quantity'], 0, '', ','); ?></td>
+                                                <!--begin::Date=-->
+                                                <td><?= $pur['p_date'] ?></td>
+                                                <!--end::Date=-->
+                                                <td><?php
+                                                    if ($pur['p_supplier'] == null) {
+                                                        echo "Not Defined";
+                                                    } else {
+                                                        echo $pur['p_supplier'];
+                                                    }
+                                                    ?></td>
+                                                <!--end::IP Address=-->
+                                                <!--begin::Action=-->
+                                            <?php if(!isset($_GET['date'])){ ?>
+                                                <td class="text-end">
+                                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
+                                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                                        <span class="svg-icon svg-icon-5 m-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                                            </svg>
+                                                        </span>
+                                                        <!--end::Svg Icon-->
+                                                    </a>
+                                                    <!--begin::Menu-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                                        <!--begin::Menu item-->
+                                                        <div class="menu-item px-3">
+                                                            <a href="#" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Edit
+                                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+
+                                                        <!--end::Svg Icon-->
+                                                    </a>
+                                                    <!--begin::Menu-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-225px " data-kt-menu="true">
+                                                      
+                                                            
+                                                            <div class="d-flex flex-column mb-2 fv-row">
+                                                                  <form class="editPur">
+                                                                <input type="text" value="<?= $pur['id'] ?>" name="pur_id" hidden />
+                                                                <!--begin::Label-->
+                                                                <!--end::Label-->
+                                                                 <!--end::Input-->
+                                                                <input class="form-control form-control-solid" type="text" value="<?= $pur['p_quantity'] ?>" name="qty" />
+                                                                <!--end::Input-->
+                                                                <!--begin::Input-->
+                                                                <input class="form-control form-control-solid" type="text" value="<?= number_format($itemData['buying_price'],0, '', ',') ?>" name="buyingPrice" />
+                                                               
+                                                                <input class="form-control form-control-solid" type="text" placeholder="supplier name" name="supplier" />
+                                                                <!--end::Input-->
+                                                                 <!--begin::Button-->
+                                                                <button type="submit" name="submit" class="btn btn-primary">
+                                                                    <span class="indicator-label">Edit Purchase</span>
+
+                                                                </button>
+                                                                <!--end::Button-->
+                                                                </form>
+                                                            </div>
+                                                          
+                                                        
+                                                        <!--begin::Menu item-->
+
+                                                        <!--end::Menu item-->
+                                                    </div>
+                                                        </div>
+                                                        <!--end::Menu item-->
+                                                        <!--begin::Menu item-->
+                                                        <div class="menu-item px-3">
+                                                            <a href="#" class="menu-link px-3" data-kt-customer-table-filter="delete_row"> <span class='delete' data-id='<?= $pur['id']; ?>'>Delete</span>
+                                                            </a>
+                                                        </div>
+                                                        <!--end::Menu item-->
+                                                    </div>
+                                                    <!--end::Menu-->
+                                                </td>
+                                            <?php } ?>
+                                                <!--end::Action=-->
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        <!--end::Table row-->
+
+                                        <!--end::Table row-->
+
+
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                
+                                
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Products-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
+                
+    <!--end::Global Javascript Bundle-->
+  <!--begin::Modal - Customers - Add-->
+                        <div class="modal fade" id="kt_modal_new_address" tabindex="-1" aria-hidden="true">
+                            <!--begin::Modal dialog-->
+                            <div class="modal-dialog modal-dialog-centered mw-650px">
+                                <!--begin::Modal content-->
+                                <div class="modal-content">
+                                    <!--begin::Form-->
+                                    <form class="form addPurchase" id="kt_modal_new_address_form" >
+                                        <!--begin::Modal header-->
+                                        <div class="modal-header" id="kt_modal_new_address_header">
+                                            <!--begin::Modal title-->
+                                            <h2>Add Purchases</h2>
+                                            <!--end::Modal title-->
+                                            <!--begin::Close-->
+                                            <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                                <span class="svg-icon svg-icon-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                        <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                                        <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                                    </svg>
+                                                </span>
+                                                <!--end::Svg Icon-->
+                                            </div>
+                                            <!--end::Close-->
+                                        </div>
+                                        <!--end::Modal header-->
+                                        <!--begin::Modal body-->
+                                        <div class="modal-body py-10 px-lg-17">
+                                            <!--begin::Scroll-->
+                                            <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
+                                                <!--begin::Notice-->
+                                                <!--begin::Notice-->
+
+                                                <!--end::Notice-->
+                                                <!--end::Notice-->
+
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+
+                                                <div class="d-flex flex-column mb-5 fv-row">
+                                                    <!--begin::Label-->
+
+                                                    <label class="d-flex align-items-center fs-5 fw-bold mb-2">
+                                                        <span class="required">Product</span>
+                                                        <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Your payment statements may very based on selected country"></i>
+                                                    </label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Select-->
+                                                    <select name="product" data-control="select2" data-dropdown-parent="#kt_modal_new_address" data-placeholder="Select a Product..." class="form-select form-select-solid" required>
+                                                        <option value="">Select an Ordered Item...</option>
+                                                        <?php foreach ($products as $product) : ?>
+                                                            <option value="<?= $product['item_id'] ?>"><?= $product['item_name'] ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <!--end::Select-->
+                                                </div>
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+                                                <div class="d-flex flex-column mb-5 fv-row">
+                                                    <!--begin::Label-->
+                                                    <label class="required fs-5 fw-bold mb-2">Quantity Ordered</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input class="form-control form-control-solid" type="number" placeholder="Product Quantity" name="qty" required />
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="d-flex flex-column mb-5 fv-row">
+                                                    <!--begin::Label-->
+                                                    <label class="required fs-5 fw-bold mb-2">Buying Price</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input class="form-control form-control-solid" type="text" placeholder="Buying Price" name="buyingPrice" />
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="d-flex flex-column mb-5 fv-row">
+                                                    <!--begin::Label-->
+                                                    <label class="required fs-5 fw-bold mb-2">Supplier</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input class="form-control form-control-solid" type="text" placeholder="supplier name" name="supplier" />
+                                                    <!--end::Input-->
+                                                </div>
+
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+
+                                                <!--end::Input group-->
+
+                                            </div>
+                                            <!--end::Scroll-->
+                                        </div>
+                                        <!--end::Modal body-->
+                                        <!--begin::Modal footer-->
+                                        <div class="modal-footer flex-center">
+                                            <!--begin::Button-->
+                                            <button type="reset" id="kt_modal_new_address_cancel" class="btn btn-light me-3">Discard</button>
+                                            <!--end::Button-->
+                                            <!--begin::Button-->
+                                            <button type="submit" name="addPurchase" id="kt_modal_new_address_submit" class="btn btn-primary">
+                                                <span class="indicator-label">Add Purchase</span>
+                                                <span class="indicator-progress">Please wait...
+                                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                            </button>
+                                            <!--end::Button-->
+                                        </div>
+                                        <!--end::Modal footer-->
+                                    </form>
+                                    <!--end::Form-->
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Modal - Customers - Add-->
+<script type="text/javascript">
+    "use strict";
+
+  $(document).ready(function() {
+        $('.addPurchase').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=purchases&s=add',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+
+    $(document).ready(function() {
+
+        // Delete 
+        $('.delete').click(function() {
+            var el = this;
+
+            // Delete id
+            var deleteid = $(this).data('id');
+
+            var confirmalert = confirm("Are you sure?");
+            if (confirmalert == true) {
+                // AJAX Request
+                $.ajax({
+                    url: request()+'?f=purchases&s=delete',
+                    type: 'POST',
+                    data: {
+                        id: deleteid
+                    },
+                    success: function(response) {
+
+                        if (response.status == 200) {
+                            // Remove row from HTML Table
+                            $(el).closest('tr').css('background', 'tomato');
+                            $(el).closest('tr').fadeOut(800, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert(response.message);
+                        }
+
+                    }
+                });
+            }
+
+        });
+
+    });
+   $(document).ready(function() {
+    $('.editPur').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+      url: request()+'?f=purchases&s=edit',
+      method: 'POST',
+      data: $(this).serialize(),
+      beforeSend: function(){
+      },
+      success : function(response){
+       console.log(response)
+        if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+      }
+    })
+  });
+  });
+   $(document).ready(function() {
+    $('.checkPrev').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+      url: request()+'?f=purchases&s=check',
+      method: 'POST',
+      data: $(this).serialize(),
+      beforeSend: function(){
+      },
+      success : function(response){
+       console.log(response)
+        if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+      }
+    })
+  });
+  });
+// Class definition
+var KTAppEcommerceReportSales = function () {
+    // Shared variables
+    var table;
+    var datatable;
+
+    // Private functions
+    var initDatatable = function () {
+        // Set date data order
+        const tableRows = table.querySelectorAll('tbody tr');
+
+        tableRows.forEach(row => {
+            const dateRow = row.querySelectorAll('td');
+            const realDate = moment(dateRow[0].innerHTML, "MMM DD, YYYY").format(); // select date from 4th column in table
+            dateRow[0].setAttribute('data-order', realDate);
+        });
+
+
+        // Init datatable --- more info on datatables: https://datatables.net/manual/
+        datatable = $(table).DataTable({
+            "info": false,
+            'order': [],
+            'pageLength': 10,
+        });
+    }
+
+    // Init daterangepicker
+    var initDaterangepicker = () => {
+        var start = moment().subtract(29, "days");
+        var end = moment();
+        var input = $("#kt_ecommerce_report_sales_daterangepicker");
+
+        function cb(start, end) {
+            input.html(start.format("MMMM D, YYYY") + " - " + end.format("MMMM D, YYYY"));
+        }
+
+        input.daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                "Today": [moment(), moment()],
+                "Yesterday": [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                "This Month": [moment().startOf("month"), moment().endOf("month")],
+                "Last Month": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+            }
+        }, cb);
+
+        cb(start, end);
+    }
+
+    // Hook export buttons
+    var exportButtons = () => {
+        const documentTitle = "<?=  $sbs['bss']['b_name']." \' ".$report. " As At :".$today.'\nTotal Purchases = UGX : '.$totalOrders ?>";
+        var buttons = new $.fn.dataTable.Buttons(table, {
+            buttons: [
+                {
+                    extend: 'copyHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'excelHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'csvHtml5',
+                    title: documentTitle
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: documentTitle
+                }
+            ]
+        }).container().appendTo($('#kt_ecommerce_report_sales_export'));
+
+        // Hook dropdown menu click event to datatable export buttons
+        const exportButtons = document.querySelectorAll('#kt_ecommerce_report_sales_export_menu [data-kt-ecommerce-export]');
+        exportButtons.forEach(exportButton => {
+            exportButton.addEventListener('click', e => {
+                e.preventDefault();
+
+                // Get clicked export value
+                const exportValue = e.target.getAttribute('data-kt-ecommerce-export');
+                const target = document.querySelector('.dt-buttons .buttons-' + exportValue);
+
+                // Trigger click event on hidden datatable export buttons
+                target.click();
+            });
+        });
+    }
+
+
+    // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
+    var handleSearchDatatable = () => {
+        const filterSearch = document.querySelector('[data-kt-ecommerce-order-filter="search"]');
+        filterSearch.addEventListener('keyup', function (e) {
+            datatable.search(e.target.value).draw();
+        });
+    }
+
+    // Public methods
+    return {
+        init: function () {
+            table = document.querySelector('#kt_ecommerce_report_sales_table');
+
+            if (!table) {
+                return;
+            }
+
+            initDatatable();
+            initDaterangepicker();
+            exportButtons();
+            handleSearchDatatable();
+        }
+    };
+}();
+
+// On document ready
+KTUtil.onDOMContentLoaded(function () {
+    KTAppEcommerceReportSales.init();
+});
+
+</script>

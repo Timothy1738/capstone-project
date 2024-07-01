@@ -1,0 +1,85 @@
+
+<!--begin::Nav-->
+<div class="aside-nav d-flex flex-column align-lg-center flex-column-fluid w-100 pt-5 pt-lg-0" id="kt_aside_nav">
+    <!--begin::Primary menu-->
+    <div id="kt_aside_menu" class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6" data-kt-menu="true">
+
+        <div data-kt-menu-placement="right-start" class="menu-item here <?php if ($page == "index" || $page == "index1") {
+                                                                            echo "show";
+                                                                        } ?> py-3">
+            <span class="menu-link menu-center" title="Home" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                <span class="menu-icon me-0">
+                        <a class="menu-link" href="index.php?page=<?=$sbs['home_link']?>">
+                            <i class="bi bi-house fs-2"></i>
+                        </a> 
+
+                </span>
+            </span>
+            <!-- -->
+        </div>
+        <div data-kt-menu-placement="right-start" class="menu-item <?php if ($page == "Orders") {
+                                                                        echo "show";
+                                                                    } ?> py-3">
+            <span class="menu-link menu-center" title="Orders" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                <span class="menu-icon me-0">
+                    <a class="menu-link" href="index.php?page=Orders">
+                        <i class="bi bi-cart3 fs-2"></i>
+                    </a>
+                </span>
+            </span>
+
+        </div>
+        <div data-kt-menu-placement="right-start" class="menu-item <?php if ($page == "Sales") {
+                                                                        echo "show";
+                                                                    } ?> py-3">
+            <span class="menu-link menu-center" title="Sales" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                <span class="menu-icon me-0">
+                    <a class="menu-link" href="index.php?page=Sales">
+                        <i class="bi bi-briefcase fs-2"></i>
+                    </a>
+                </span>
+            </span>
+        </div>
+
+        <div data-kt-menu-placement="right-start" class="menu-item <?php if ($page == "currentStock") {
+                                                                        echo "show";
+                                                                    } ?> py-3">
+            <span class="menu-link menu-center" title="Current Stock" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                <span class="menu-icon me-0">
+                    <a class="menu-link" href="index.php?page=currentStock">
+                        <i class="bi bi-diagram-3 fs-2"></i>
+                    </a>
+                </span>
+            </span>
+        </div>
+        <?php
+        if (empty($sbs['user']['is_cashier'])) {
+        ?>
+            <div data-kt-menu-placement="right-start" class="menu-item <?php if ($page == "Purchases") {
+                                                                            echo "show";
+                                                                        } ?> py-3">
+                <span class="menu-link menu-center" title="Purchases" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                    <span class="menu-icon me-0">
+                        <a class="menu-link" href="index.php?page=Purchases">
+                            <i class="bi bi-bag fs-2"></i>
+                        </a>
+                    </span>
+                </span>
+
+            </div>
+        <?php  } ?>
+         <div data-kt-menu-placement="right-start" class="menu-item <?php if ($page == "Expenses") {
+                                                                        echo "show";
+                                                                    } ?> py-3">
+            <span class="menu-link menu-center" title="Expenses" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                <span class="menu-icon me-0">
+                    <a class="menu-link" href="index.php?page=Expenses">
+                        <i class="bi bi-basket3 fs-2"></i>
+                    </a>
+                </span>
+            </span>
+        </div>
+    </div>
+    <!--end::Primary menu-->
+</div>
+<!--end::Nav-->

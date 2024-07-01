@@ -1,0 +1,313 @@
+ <?php 
+$brands = get_data("brand", "WHERE b_business_id = '" . $sbs['bss']['business_id'] . "'");
+$cats = get_data("categories", "WHERE c_business_id = '" . $sbs['bss']['business_id'] . "'");
+ ?>
+             <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                   
+                        <!--begin::Form-->
+                        <form id="addPro" class="form d-flex flex-column flex-lg-row fv-plugins-bootstrap5 fv-plugins-framework" enctype="multipart/form-data">
+                            <!--begin::Aside column-->
+                            <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
+
+                                <!--begin::Status-->
+
+                                <!--end::Status-->
+                                <!--begin::Category & tags-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <!--begin::Card title-->
+                                        <div class="card-title">
+                                            <h2>Product Details</h2>
+                                        </div>
+                                        <!--end::Card title-->
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <!--begin::Label-->
+                                        <label class="required form-label">Choose Product Category</label>
+                                        <!--end::Label-->
+                                        <!--begin::Select2-->
+                                        <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" data-placeholder="Choose Product Categor" name="pcat" data-hide-search="true" id="kt_ecommerce_edit_order_shipping" data-select2-id="select2-data-kt_ecommerce_edit_order_shipping" tabindex="-1" aria-hidden="true">
+                                            <option value="">Choose Category</option>
+                                            <?php foreach ($cats as $cat) : ?>
+                                                <option value="<?= $cat['category_id'] ?>"><?= $cat['c_name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+
+                                        <!--end::Select-->
+                                        <!--begin::Description-->
+                                        <div class="text-muted fs-7 mb-7">Add product category.</div>
+                                        <!--end::Description-->
+                                        <!--end::Input group-->
+                                        <!--begin::Button-->
+                                        <a href="index.php?page=categories" class="btn btn-light-primary btn-sm mb-10">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
+                                            <span class="svg-icon svg-icon-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"></rect>
+                                                    <rect x="6" y="11" width="12" height="2" rx="1" fill="currentColor"></rect>
+                                                </svg>
+                                            </span>
+                                            <!--end::Svg Icon-->Create new category
+                                        </a>
+                                        <!--end::Button-->
+
+
+
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card body-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <!--begin::Label-->
+                                        <label class="required form-label">Choosen A Product Brand</label>
+                                        <!--end::Label-->
+                                        <!--begin::Select2-->
+                                        <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" data-placeholder="Choose Brand" name="pbrand" id="kt_ecommerce_edit_order_shipping" data-select2-id="select2-data-kt_ecommerce_edit_order_shipping" tabindex="-1" aria-hidden="true">
+                                            <option></option>
+                                            <?php foreach ($brands as $brand) : ?>
+                                                <option value="<?= $brand['brand_id'] ?>"><?= $brand['brand_name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <!--end::Select-->
+                                        <!--begin::Description-->
+                                        <div class="text-muted fs-7 mb-7">Add product brand</div>
+                                        <!--end::Description-->
+                                        <!--end::Input group-->
+                                        <!--begin::Button-->
+                                        <a href="index.php?page=brands" class="btn btn-light-primary btn-sm mb-10">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
+                                            <span class="svg-icon svg-icon-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"></rect>
+                                                    <rect x="6" y="11" width="12" height="2" rx="1" fill="currentColor"></rect>
+                                                </svg>
+                                            </span>
+                                            <!--end::Svg Icon-->Create new brand
+                                        </a>
+                                        <!--end::Button-->
+
+
+
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card body-->
+                                </div>
+
+                                <!--end::Category & tags-->
+
+
+                            </div>
+                            <!--end::Aside column-->
+                            <!--begin::Main column-->
+                            <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+                                <!--begin:::Tabs-->
+                                <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-n2">
+                                    <!--begin:::Tab item-->
+                                    <li class="nav-item">
+                                        <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_ecommerce_add_product_general">General</a>
+                                    </li>
+                                    <!--end:::Tab item-->
+                                    <!--begin:::Tab item-->
+                                    <!--<li class="nav-item">-->
+                                    <!--    <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_ecommerce_add_product_advanced">Advanced</a>-->
+                                    <!--</li>-->
+                                    <!--end:::Tab item-->
+                                </ul>
+                                <!--end:::Tabs-->
+                                <!--begin::Tab content-->
+                                <div class="tab-content">
+                                    <!--begin::Tab pane-->
+                                    <div class="tab-pane fade show active" id="kt_ecommerce_add_product_general" role="tab-panel">
+                                        <div class="d-flex flex-column gap-7 gap-lg-10">
+
+
+                                            <!--begin::Pricing-->
+                                            <div class="card card-flush py-4">
+                                                <!--begin::Card header-->
+                                                <div class="card-header">
+                                                    <div class="card-title">
+                                                        <h2>Product Details</h2>
+                                                    </div>
+                                                </div>
+                                                <!--end::Card header-->
+                                                <!--begin::Card body-->
+                                                <div class="card-body pt-0">
+                                                    <!--begin::Input group-->
+                                                    <div class="mb-10 fv-row fv-plugins-icon-container">
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Product Name</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="pname" class="form-control mb-2" placeholder="Product Name" value="">
+                                                        <label class="required form-label">Product Units</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="punits" class="form-control mb-2" placeholder="eg bottles, packets , boxes..." value="">
+                                                        <!--end::Input-->
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Base Price</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="number" name="bprice" class="form-control mb-2" placeholder="Product price" value="">
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">Set the product base(buying) price.</div>
+                                                        <!--end::Description-->
+                                                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                                                    </div>
+                                                    <div class="mb-10 fv-row fv-plugins-icon-container">
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Selling Price</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="number" name="sprice" class="form-control mb-2" placeholder="Product Selling price" value="">
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">Set the product selling price.</div>
+                                                        <!--end::Description-->
+                                                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                                                    </div>
+                                                    <div class="mb-10 fv-row fv-plugins-icon-container">
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Available Quantity</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="qty" class="form-control mb-2" placeholder="Available Quantity" value="">
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">Set the availabe product Quantity</div>
+                                                        <!--end::Description-->
+                                                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                                                    </div>
+                                                    <!--end::Input group-->
+
+                                                    <!--begin::Input group-->
+
+
+                                                </div>
+                                                <!--end::Card header-->
+                                            </div>
+                                            <!--end::Pricing-->
+                                        </div>
+                                    </div>
+                                    <!--end::Tab pane-->
+                                    <!--begin::Tab pane-->
+                                    <div class="tab-pane fade" id="kt_ecommerce_add_product_advanced" role="tab-panel">
+                                        <div class="d-flex flex-column gap-7 gap-lg-10">
+                                            <!--begin::Inventory-->
+                                            <div class="card card-flush py-4">
+                                                <!--begin::Card header-->
+                                                <div class="card-header">
+                                                    <div class="card-title">
+                                                        <h2>Excel Upload</h2>
+                                                    </div>
+                                                </div>
+                                                <!--end::Card header-->
+                                                <!--begin::Card body-->
+                                                <div class="card-body pt-0">
+                                                    <!--begin::Input group-->
+                                                    <div class="mb-10 fv-row fv-plugins-icon-container">
+                                                        <!--begin::Label-->
+                                                        
+<p>Your Excel File should be having below column Format <br/><strong>Itme name | Buying Price | Selling Price | Quantity</strong></p>
+        <div class="form-group">
+            <label>Upload Excel File</label>
+            <input type="file" name="file" class="form-control">
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" name="Submit" class="btn btn-success upload">Upload</button>
+        </div>
+        <!-- <p>Download Demo File from here : <a href="demo.ods"><strong>Demo.ods</strong></a></p> -->
+  
+                                                    </div>
+                                                   
+                                                </div>
+                                                <!--end::Card header-->
+                                            </div>
+                                            <!--end::Inventory-->
+                                            
+                                        </div>
+                                    </div>
+                                    <!--end::Tab pane-->
+                                </div>
+                                <!--end::Tab content-->
+                                <div class="d-flex justify-content-end">
+                                    <!--begin::Button-->
+                                    <a href="products" id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">Cancel</a>
+                                    <!--end::Button-->
+                                    <!--begin::Button-->
+                                    <button type="submit" name="add_product" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
+                                        <span class="indicator-label">Register Product</span>
+                                        <span class="indicator-progress">Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                    <!--end::Button-->
+                                </div>
+                            </div>
+                            <!--end::Main column-->
+                            <div></div>
+                        </form>
+                        <!--end::Form-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+
+                <!--end::Content-->
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#addPro').on('submit', function(e) {
+            e.preventDefault();
+                 $.ajax({
+          url: request()+'?f=products&s=add',
+           type: "POST",
+           data:  new FormData(this),
+           contentType: false,
+                 cache: false,
+           processData:false,
+           beforeSend : function() {
+                    $('.upload').html('Uploading....');
+                    $('.upload').addClass('disabled');
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('.upload').html('Uploading....');
+                    $('.upload').removeClass('disabled');
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+</script>

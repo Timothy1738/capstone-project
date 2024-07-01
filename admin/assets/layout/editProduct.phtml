@@ -1,0 +1,319 @@
+   <?php 
+   $brands = get_data("brand", "WHERE b_business_id = '".$sbs['bss']['business_id']."'");
+$cats = get_data("categories", "WHERE c_business_id = '".$sbs['bss']['business_id']."'");
+$item_id = __secure($_GET['updateID']);
+$item_data = getOneItem("items", "i_business_id", $sbs['bss']['business_id'], "item_id", $item_id);
+$cat_data = getOneItem("categories", "c_business_id", $sbs['bss']['business_id'], "category_id", $item_data['i_category_id']);
+$brand_data = getOneItem("brand", "b_business_id", $sbs['bss']['business_id'], "brand_id", $item_data['i_brand_id']);
+if (empty($brand_data)) {
+    $brand_data['brand_name'] = 'not defined';
+    // $brand_data['brand_id'] = 
+}
+if (empty($cat_data)) {
+    $cat_data['c_name'] = 'not defined';
+}
+$current_stock = getOneItem("current_stock", "c_business_id", $sbs['bss']['business_id'], "item_id", $item_id);
+   ?>
+   <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                      
+                        <!--begin::Form-->
+                        <form id="editPro" class="form d-flex flex-column flex-lg-row fv-plugins-bootstrap5 fv-plugins-framework" data-kt-redirect="/metronic8/demo4/../demo4/apps/ecommerce/catalog/products.php">
+                            <input type="text" name="itemID" value="<?= $item_data['item_id'] ?>" hidden />
+                            <!--begin::Aside column-->
+                            <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
+
+                                <!--begin::Status-->
+
+                                <!--end::Status-->
+                                <!--begin::Category & tags-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <!--begin::Card title-->
+                                        <div class="card-title">
+                                            <h2>Product Details</h2>
+                                        </div>
+                                        <!--end::Card title-->
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <!--begin::Label-->
+                                        <label class="required form-label">Choose Product Category</label>
+                                        <!--end::Label-->
+                                        <!--begin::Select2-->
+                                        <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" data-placeholder="Choose Product Categor" name="pcat" data-hide-search="true" id="kt_ecommerce_edit_order_shipping" data-select2-id="select2-data-kt_ecommerce_edit_order_shipping" tabindex="-1" aria-hidden="true">
+                                            <option value="<?= $cat_data['category_id'] ?>"><?= $cat_data['c_name'] ?></option>
+                                            <?php foreach ($cats as $cat) : ?>
+                                                <option value="<?= $cat['category_id'] ?>"><?= $cat['c_name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+
+                                        <!--end::Select-->
+                                        <!--begin::Description-->
+                                        <div class="text-muted fs-7 mb-7">Add product category.</div>
+                                        <!--end::Description-->
+                                        <!--end::Input group-->
+                                        <!--begin::Button-->
+                                        <a href="categories" class="btn btn-light-primary btn-sm mb-10">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
+                                            <span class="svg-icon svg-icon-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"></rect>
+                                                    <rect x="6" y="11" width="12" height="2" rx="1" fill="currentColor"></rect>
+                                                </svg>
+                                            </span>
+                                            <!--end::Svg Icon-->Create new category
+                                        </a>
+                                        <!--end::Button-->
+
+
+
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card body-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <!--begin::Label-->
+                                        <label class="required form-label">Choosen A Product Brand</label>
+                                        <!--end::Label-->
+                                        <!--begin::Select2-->
+                                        <select class="form-select mb-2 select2-hidden-accessible" data-control="select2" data-placeholder="Choose Brand" name="pbrand" id="kt_ecommerce_edit_order_shipping" data-select2-id="select2-data-kt_ecommerce_edit_order_shipping" tabindex="-1" aria-hidden="true">
+                                            <option value="<?= $brand_data['brand_id'] ?>"><?= $brand_data['brand_name'] ?></option>
+                                            <?php foreach ($brands as $brand) : ?>
+                                                <option value="<?= $brand['brand_id'] ?>"><?= $brand['brand_name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <!--end::Select-->
+                                        <!--begin::Description-->
+                                        <div class="text-muted fs-7 mb-7">Add product brand</div>
+                                        <!--end::Description-->
+                                        <!--end::Input group-->
+                                        <!--begin::Button-->
+                                        <a href="brand" class="btn btn-light-primary btn-sm mb-10">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
+                                            <span class="svg-icon svg-icon-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1" transform="rotate(-90 11 18)" fill="currentColor"></rect>
+                                                    <rect x="6" y="11" width="12" height="2" rx="1" fill="currentColor"></rect>
+                                                </svg>
+                                            </span>
+                                            <!--end::Svg Icon-->Create new brand
+                                        </a>
+                                        <!--end::Button-->
+
+
+
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card body-->
+                                </div>
+
+                                <!--end::Category & tags-->
+
+
+                            </div>
+                            <!--end::Aside column-->
+                            <!--begin::Main column-->
+                            <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+                                <!--begin:::Tabs-->
+                              
+                                <!--end:::Tabs-->
+                                <!--begin::Tab content-->
+                                <div class="tab-content">
+                                    <!--begin::Tab pane-->
+                                    <div class="tab-pane fade show active" id="kt_ecommerce_add_product_general" role="tab-panel">
+                                        <div class="d-flex flex-column gap-7 gap-lg-10">
+
+
+                                            <!--begin::Pricing-->
+                                            <div class="card card-flush py-4">
+                                                <!--begin::Card header-->
+                                                <div class="card-header">
+                                                    <div class="card-title">
+                                                        <h2>Product Details</h2>
+                                                    </div>
+                                                </div>
+                                                <!--end::Card header-->
+                                                <!--begin::Card body-->
+                                                <div class="card-body pt-0">
+                                                    <!--begin::Input group-->
+                                                    <div class="mb-10 fv-row fv-plugins-icon-container">
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Product Name</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="pname" class="form-control mb-2" placeholder="Product Name" value="<?= $item_data['item_name'] ?>">
+                                                        <!--end::Input-->
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Units</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="punits" class="form-control mb-2" placeholder="Product Units eg bottles , boxes, packets..." value="<?= $item_data['units'] ?>">
+                                                        <!--end::Input-->
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Base Price</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="number" name="bprice" class="form-control mb-2" placeholder="Product price" value="<?= $item_data['buying_price'] ?>">
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">Set the product base(buying) price.</div>
+                                                        <!--end::Description-->
+                                                        <div class="fv-plugins-message-container invalid-feedback"></div>
+
+                                                        <!--begin::Label-->
+                                                        <label class="required form-label">Selling Price</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="number" name="sprice" class="form-control mb-2" placeholder="Product Selling price" value="<?= $item_data['item_price'] ?>">
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+
+                                                        <?php
+                                                        if ($item_data['i_craeted'] == getCurrentDateOnly()) { ?>
+                                                            <div class="text-muted fs-7">Available Quantity</div>
+                                                            <!--end::Description-->
+                                                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                                                            <input type="number" name="qty" class="form-control mb-2" placeholder="Quantity" value="<?= $current_stock['quantity'] ?>">
+                                                        <?php } ?>
+
+
+
+
+                                                    </div>
+
+                                                </div>
+                                                <!--end::Card header-->
+                                            </div>
+                                            <!--end::Pricing-->
+                                        </div>
+                                    </div>
+                                    <!--end::Tab pane-->
+                                  
+                                </div>
+                                <!--end::Tab content-->
+                                <div class="d-flex justify-content-end">
+                                    <a href="" id="delete" class="btn btn-danger me-5">Delete This Item</a>
+                                    <!--begin::Button-->
+                                    <a href="index.php?page=Products" id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">Cancel</a>
+                                    <!--end::Button-->
+                                    <!--begin::Button-->
+                                    <button type="submit" name="add_product" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
+                                        <span class="indicator-label">Edit Product</span>
+                                        <span class="indicator-progress">Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                    <!--end::Button-->
+                                </div>
+                            </div>
+                            <!--end::Main column-->
+                            <div></div>
+                        </form>
+                        <!--end::Form-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+
+                <!--end::Content-->
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#editPro').on('submit', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: request()+'?f=products&s=editPro',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+    $(document).ready(function() {
+        $('#delete').click(function(e) {
+            e.preventDefault();
+            var deleteid = <?=$item_id?>;
+            var confirmalert = confirm("Are you sure?!");
+            if (confirmalert == true) {
+             $.ajax({
+                url: request()+'?f=products&s=delPro',
+                method: 'POST',
+                data: {
+                        id: deleteid
+                    },
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = 'index.php?page=Products';;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+         }
+        });
+
+    })
+    
+
+</script>

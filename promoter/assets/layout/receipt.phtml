@@ -1,0 +1,218 @@
+<?php
+$orders = get_data("my_orders", "WHERE o_business_id = '" . $sbs['bss']['business_id'] . "'");
+$bill_no = __secure($_GET['bill']);
+$myOrder = myOrders($sbs['bss']['business_id'], $bill_no);
+$error = "";
+$total = 0;
+$casher_id = 0;
+foreach ($myOrder as $order) {
+    $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+    $total += ($itemData['item_price'] * $order['quantity']) - $order['discount'];
+    $casher_id = $order['cashier'];
+}
+if (isset($_POST['confirmPay'])) {
+    $amount = __secure($_POST['amount']);
+    if ($amount < $total) {
+        $error = "pay_fail";
+        $msg = "Bill N0 " . $bill_no . " is valued UGX: " . $total;
+    } else {
+        header("location: receipt?bill=" . $bill_no);
+    }
+}
+$customerAmount = $total;
+if (isset($_GET['pay'])) {
+    $customerAmount = __secure($_GET['pay']);
+}
+
+?>
+<!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <!-- begin::Invoice 1-->
+                        <div class="card">
+                            <!-- begin::Body-->
+                            <div class="card-body py-20">
+                                <!-- begin::Wrapper-->
+                                <div class="mw-lg-950px mx-auto w-100">
+                                    <!-- begin::Header-->
+                                    <div id="printIt">
+                                        <div class="d-flex justify-content-between flex-column flex-sm-row mb-19">
+                                            <h4 class="fw-boldest text-gray-800 fs-2qx pe-5 pb-7">RECEIPT</h4>
+                                            <!--end::Logo-->
+                                            <div class="text-sm-end">
+                                                <!--begin::Logo-->
+                                                <a href="#">
+                                                    <!-- <img alt="Logo" src="assets/media/svg/brand-logos/duolingo.svg" /> -->
+                                                </a>
+                                                <!--end::Logo-->
+                                                <!--begin::Text-->
+                                                <div class="text-sm-end fw-bold fs-4 text-muted mt-7">
+                                                    <div><?php echo $sbs['bss']['b_name'] . " , " . $sbs['user']['tel'] ?>,</div>
+                                                    <div><?= $sbs['bss']['b_address'] ?></div>
+                                                </div>
+                                                <!--end::Text-->
+                                            </div>
+                                        </div>
+                                        <!--end::Header-->
+                                        <!--begin::Body-->
+                                        <div class="border-bottom pb-12">
+                                            <!--begin::Image-->
+                                            <!-- <div class="d-flex flex-row-fluid bgi-no-repeat bgi-position-x-center bgi-size-cover card-rounded h-150px h-lg-250px mb-lg-20" style="background-image: url(assets/media/misc/pattern-4.jpg)"></div> -->
+                                            <!--end::Image-->
+                                            <!--begin::Wrapper-->
+                                            <div class="d-flex justify-content-between flex-column flex-md-row">
+                                                <!--begin::Content-->
+                                                <div class="flex-grow-1 pt-8 mb-13">
+                                                    <!--begin::Table-->
+                                                    <div class="table-responsive border-bottom mb-14">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr class="border-bottom fs-6 fw-bolder text-muted text-uppercase">
+                                                                    <th class="min-w-5px pb-9">S/No.</th>
+                                                                    <th class="min-w-135px pb-9">Item</th>
+                                                                    <th class="min-w-70px pb-9 text-end">Qty</th>
+                                                                    <th class="min-w-80px pb-9 text-end">Unit Price</th>
+                                                                    <th class="min-w-100px pe-lg-6 pb-9 text-end">Amount</th>
+                                                                    <th class="min-w-100px pe-lg-6 pb-9 text-end">Discount</th>
+                                                                    <th class="min-w-100px pe-lg-6 pb-9 text-end">Total Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php
+                                                                $num = 0;
+                                                                $billDate = "date";
+                                                                foreach ($myOrder as $order) :
+                                                                    $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+                                                                    $billDate = $order['created'];
+                                                                    $disc = 0;
+                                                                    if (!empty($order['discount'])) {
+                                                                        $disc = $order['discount'];
+                                                                    }
+                                                                ?>
+                                                                    <tr class="fw-bolder text-gray-700 fs-5 text-end">
+                                                                        <td class="pt-11 "><?=$num += 1?></td>
+                                                                        <td class="d-flex align-items-center pt-11">
+                                                                            <i class=" text-danger fs-1 me-2"></i><?= $itemData['item_name'] ?>
+                                                                        </td>
+                                                                        <td class="pt-11"><?= $order['quantity'] ?></td>
+                                                                        <td class="pt-11">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></td>
+                                                                        <td class="pt-11 fs-5 pe-lg-6 text-dark fw-boldest">UGX: <?= number_format($itemData['item_price'] * $order['quantity'], 0, '', ','); ?></td>
+                                                                        <td class="pt-11 fs-5 pe-lg-6 text-dark fw-boldest">UGX: <?= number_format($order['discount'], 0, '', ','); ?></td>
+                                                                        <td class="pt-11 fs-5 pe-lg-6 text-dark fw-boldest">UGX: <?= number_format(($itemData['item_price'] * $order['quantity']) - $disc, 0, '', ','); ?></td>
+                                                                    </tr>
+                                                                <?php endforeach;
+                                                               
+                                                                ?>
+
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <!--end::Table-->
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex flex-column mw-md-300px w-100">
+                                                         <div class="d-flex flex-stack text-gray-800 mb-3 fs-6">
+                                                        <!--begin::Accountname-->
+                                                        <div class="fw-bold pe-5">Total Amount :</div>
+                                                        <!--end::Accountname-->
+                                                        <!--begin::Label-->
+                                                        <div class="text-end fw-norma">UGX: <?= number_format($total, 0, '', ','); ?></div>
+                                                        <!--end::Label-->
+                                                    </div>
+                                                        <!--begin::Label-->
+                                                        <div class="fw-bold fs-5 mb-3 text-dark00">PAYMENT DETAILS</div>
+                                                        <!--end::Label-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex flex-stack text-gray-800 mb-3 fs-6">
+                                                            <!--begin::Accountname-->
+                                                            <div class="fw-bold pe-5">Mode Of Payment :</div>
+                                                            <!--end::Accountname-->
+                                                            <!--begin::Label-->
+                                                            <div class="text-end fw-norma">CASH</div>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex flex-stack text-gray-800 mb-3 fs-6">
+                                                            <!--begin::Accountnumber-->
+                                                            <div class="fw-bold pe-5">Received</div>
+                                                            <!--end::Accountnumber-->
+                                                            <!--begin::Number-->
+                                                            <div class="text-end fw-norma">UGX: <?= number_format($customerAmount, 0, '', ','); ?></div>
+                                                            <!--end::Number-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex flex-stack text-gray-800 fs-6">
+                                                            <!--begin::Code-->
+                                                            <div class="fw-bold pe-5">Balance :</div>
+                                                            <!--end::Code-->
+                                                            <!--begin::Label-->
+                                                            <div class="text-end fw-norma">UGX: <?= number_format(($customerAmount - $total), 0, '', ','); ?></div>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                </div>
+                                                <!--end::Content-->
+                                                <!--begin::Separator-->
+                                                <div class="border-end d-none d-md-block mh-450px mx-9"></div>
+                                                <!--end::Separator-->
+                                                <!--begin::Content-->
+                                                <div class="text-end pt-10">
+                                                    <!--begin::Total Amount-->
+                                                    <div class="fs-3 fw-bolder text-muted mb-3">TOTAL AMOUNT</div>
+                                                    <div class="fs-xl-2x fs-2 fw-boldest">UGX: <?= number_format($total, 0, '', ','); ?></div>
+                                                    <!-- <div class="text-muted fw-bold">Taxes included</div> -->
+                                                    <!--end::Total Amount-->
+                                                    <div class="border-bottom w-100 my-7 my-lg-16"></div>
+                                                    <!--begin::Invoice To-->
+                                                    <div class="text-gray-600 fs-6 fw-bold mb-3">CASHIER</div>
+                                                    <div class="fs-6 text-gray-800 fw-bold mb-8"><?= $sbs['user']['firstname'] . " " . $sbs['user']['lastname'] ?>
+                                                        <br />
+                                                    </div>
+                                                    <!--end::Invoice To-->
+                                                    <!--begin::Invoice No-->
+                                                    <div class="text-gray-600 fs-6 fw-bold mb-3">BILL NO.</div>
+                                                    <div class="fs-6 text-gray-800 fw-bold mb-8"><?= $bill_no ?></div>
+                                                    <!--end::Invoice No-->
+                                                    <!--begin::Invoice Date-->
+                                                    <div class="text-gray-600 fs-6 fw-bold mb-3">DATE</div>
+                                                    <div class="fs-6 text-gray-800 fw-bold"><?= $billDate ?></div>
+                                                    <!--end::Invoice Date-->
+                                                </div>
+                                                <!--end::Content-->
+                                            </div>
+                                            <!--end::Wrapper-->
+                                        </div>
+                                    </div>
+                                    <!--end::Body-->
+                                  
+                                       
+                                            <!-- begin::Pint-->
+                                            <button onClick="printOut('printIt')" type="button" class="btn btn-success my-1 me-12"> Print Receipt </button>
+                                            <!-- end::Pint-->
+                                          
+                                    
+                                    
+                                </div>
+                                <!-- end::Wrapper-->
+                            </div>
+                            <!-- end::Body-->
+                        </div>
+                        <!-- end::Invoice 1-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
+                <script>
+    function printOut(divId) {
+        var printOutContent = document.getElementById(divId).innerHTML;
+        var originalContent = document.body.innerHTML;
+        document.body.innerHTML = printOutContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    }
+</script>

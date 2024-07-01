@@ -1,0 +1,142 @@
+<div id="kt_help" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="help" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'350px', 'md': '525px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_help_toggle" data-kt-drawer-close="#kt_help_close">
+    <!--begin::Card-->
+    <div class="card shadow-none rounded-0 w-100">
+        <!--begin::Header-->
+        <div class="card-header" id="kt_help_header">
+            <h5 class="card-title fw-bold text-gray-600">Our Help Desk</h5>
+            <div class="card-toolbar">
+                <button type="button" class="btn btn-sm btn-icon explore-btn-dismiss me-n5" id="kt_help_close">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                    <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </button>
+            </div>
+        </div>
+        <!--end::Header-->
+        <!--begin::Body-->
+        <div class="card-body" id="kt_help_body">
+            <!--begin::Content-->
+            <div id="kt_help_scroll" class="hover-scroll-overlay-y" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_help_body" data-kt-scroll-dependencies="#kt_help_header" data-kt-scroll-offset="5px">
+                <!--begin::Support-->
+                <div class="rounded border border-dashed border-gray-300 p-6 p-lg-8 mb-10">
+                    <!--begin::Heading-->
+                    <h2 class="fw-bolder mb-5">POWERED BY:
+                        <a href="https://jtektechnologies.co/" target="_blank" class="">JTEK Technologies Co. LTD</a>
+                    </h2>
+                    <div class="fs-5 fw-bold mb-5">
+                        <span class="text-gray-500">Call Or Whats App us at:
+                            <ul>+256 773 949 847</ul>
+                            <ul>+256 760 078 738</ul>
+                            <ul>+256 775 776 167</ul>
+                        </span>
+    
+                    </div>
+                 
+              
+                <!--end::Support-->
+                 <h2>Or type your Question Below</h2>
+                <!--begin::Link-->
+             
+                        <form id="help" class="form d-flex flex-column flex-lg-row fv-plugins-bootstrap5 fv-plugins-framework" >
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <div class="mb-10 fv-row fv-plugins-icon-container">
+                            <!--begin::Label-->
+                                                    
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <textarea type="text" name="qst" class="form-control mt-6 shadow-outline-none rounded py-10 px-5 text-[25px] font-bold" placeholder="Enter your question here" value=""></textarea>
+                                                        
+                            <!--end::Description-->
+                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                    <!--begin::Button-->
+                                    <a href="index.php?page=index" id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">Cancel</a>
+                                    <!--end::Button-->
+                                    <!--begin::Button-->
+                                    <button type="submit" name="" id="" class="btn btn-primary">
+                                        <span class="indicator-label">Submit </span>
+                                        <span class="indicator-progress">Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                    <!--end::Button-->
+                                </div>
+                            </div>
+                            
+</form>
+  </div>
+                <!--end::Link-->
+                <!--begin::Link-->
+                
+                <!--end::Link-->
+                <!--begin::Link-->
+                
+                <!--end::Link-->
+                <!--begin::Link-->
+                
+                <!--end::Link-->
+                <!--begin::Link-->
+                
+                <!--end::Link-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Body-->
+    </div>
+    <!--end::Card-->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#help').on('submit', function(e) {
+            e.preventDefault();
+                 $.ajax({
+          url: request()+'?f=help&s=add',
+           type: "POST",
+           data:  new FormData(this),
+           contentType: false,
+                 cache: false,
+           processData:false,
+           beforeSend : function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+</script>

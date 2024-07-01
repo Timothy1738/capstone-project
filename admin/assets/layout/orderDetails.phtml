@@ -1,0 +1,877 @@
+  <?php
+$orders = get_data("my_orders", "WHERE o_business_id = '" . $sbs['bss']['business_id'] . "'");
+$bill_no = __secure($_GET['bill']);
+$myOrder = myOrders($sbs['bss']['business_id'], $bill_no);
+$creditDetails = $db->where('business_id', $sbs['bss']['business_id'])->where('bill_no', $bill_no)->getOne('credit_records');
+$error = "";
+$total = 0;
+foreach ($myOrder as $order) {
+    $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+    $total += $itemData['item_price'] * $order['quantity'];
+}
+
+
+?>
+  <!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <!--begin::Order details page-->
+                        <div class="d-flex flex-column gap-7 gap-lg-10">
+                            <div class="d-flex flex-wrap flex-stack gap-5 gap-lg-10">
+                                <!--begin:::Tabs-->
+                                <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-lg-n2 me-auto">
+                                    <!--begin:::Tab item-->
+                                    <li class="nav-item">
+                                        <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_ecommerce_sales_order_summary"><?=empty($creditDetails)?'Order Summary':'Credit Details';?>
+                                           </a>
+                                    </li>
+                                    <!--end:::Tab item-->
+                                    <!--begin:::Tab item-->
+                                   <!--  <li class="nav-item">
+                                        <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#kt_ecommerce_sales_order_history">Order History</a>
+                                    </li> -->
+                                    <!--end:::Tab item-->
+                                </ul>
+                                <!--end:::Tabs-->
+                                <!--begin::Button-->
+                                <a href="#" class="btn btn-icon btn-light-primary btn-sm ms-auto me-lg-n7">
+                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr074.svg-->
+                                    <span class="svg-icon svg-icon-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M11.2657 11.4343L15.45 7.25C15.8642 6.83579 15.8642 6.16421 15.45 5.75C15.0358 5.33579 14.3642 5.33579 13.95 5.75L8.40712 11.2929C8.01659 11.6834 8.01659 12.3166 8.40712 12.7071L13.95 18.25C14.3642 18.6642 15.0358 18.6642 15.45 18.25C15.8642 17.8358 15.8642 17.1642 15.45 16.75L11.2657 12.5657C10.9533 12.2533 10.9533 11.7467 11.2657 11.4343Z" fill="currentColor" />
+                                        </svg>
+                                    </span>
+                                    <!--end::Svg Icon-->
+                                </a>
+                                <!--end::Button-->
+                                <!--begin::Button-->
+                                <a href="index.php?page=editOrder&bill=<?= $order['bill_no'] ?>" class="btn btn-light-primary btn-sm me-lg-n7"><?=empty($creditDetails)?'Edit Order':''?></a>
+                                <!--end::Button-->
+                                <!--begin::Button-->
+                                <a href="index.php?page=addOrder" class="btn btn-light-primary btn-sm">Add New Order</a>
+                                <!--end::Button-->
+                            </div>
+                            <!--begin::Order summary-->
+
+                            <!--end::Order summary-->
+                            <!--begin::Tab content-->
+                            <div class="tab-content">
+                                <!--begin::Tab pane-->
+                                <div class="tab-pane fade show active" id="kt_ecommerce_sales_order_summary" role="tab-panel">
+                                    <!--begin::Orders-->
+                                    <div class="d-flex flex-column gap-7 gap-lg-10">
+
+                                        <!--begin::Product List-->
+                                        <div id="printIt" class="card card-flush py-4 flex-row-fluid overflow-hidden" > 
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                <?php if(!empty($creditDetails)){ ?>
+                                                    <h2>INVOICE No. <?= $bill_no ?></h2>
+                                                <?php }else{ ?>
+                                                    <h2>Bill No. <?= $bill_no ?></h2>
+                                                  <?php } ?>
+                                                </div>
+ 
+                                                <?php if(!empty($creditDetails)){ ?>
+                                                 <div class="card-title">
+                                                <div class="fw-bold fs-4 text-muted mt-7">
+                                                    <div><?php echo $sbs['bss']['b_name'] . " , " . $sbs['user']['tel'] ?>,</div>
+                                                    <div><?= $sbs['bss']['b_address'] ?></div><br>
+                                                    <p>Bill To :<br>Name : <?= $creditDetails->customer_name?> <br>Tel. : <?= $creditDetails->customer_tel?></p>
+
+                                                </div>     
+                                                </div>
+                                            <?php } ?>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+                                                <div class="table-responsive">
+                                                    <!--begin::Table-->
+                                                    <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0">
+                                                        <!--begin::Table head-->
+                                                        <thead>
+                                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                                <th class="min-w-10px">S/No.</th>
+                                                                <th class="min-w-100px">Product</th>
+
+                                                                <th class="min-w-70px">Qty</th>
+                                                                <th class="min-w-100px text-end">Unit Price</th>
+                                                                <th class="min-w-100px text-end">Total</th>
+                                                                <th class="min-w-100px text-end">Discount</th>
+                                                                <th class="min-w-100px text-end">Total Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <!--end::Table head-->
+                                                        <!--begin::Table body-->
+                                                        <tbody class="fw-bold text-gray-600">
+                                                            <!--begin::Products-->
+                                                            <?php
+                                                            $num = 0;
+                                                            $total = 0;
+
+                                                            foreach ($myOrder as $order) :
+                                                                $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+                                                                $total += ($itemData['item_price'] * $order['quantity']) - $order['discount'];
+                                                                $dis = 0;
+                                                                if (!empty($order['discount'])) {
+                                                                    $dis = $order['discount'];
+                                                                }
+                                                            ?>
+                                                                <tr>
+                                                                    <!--begin::Product-->
+                                                                    <td><?= $num += 1 ?></td>
+                                                                    <td><?= $itemData['item_name'] ?></td>
+                                                                    <!--end::Product-->
+                                                                    <!--begin::SKU-->
+                                                                    <!--end::SKU-->
+                                                                    <!--begin::Quantity-->
+                                                                    <td class=""><?= $order['quantity'] ?></td>
+                                                                    <!--end::Quantity-->
+                                                                    <!--begin::Price-->
+                                                                    <td class="text-end">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></td>
+                                                                    <!--end::Price-->
+                                                                    <!--begin::Total-->
+                                                                    <td class="text-end">UGX: <?= number_format($itemData['item_price'] * $order['quantity'], 0, '', ','); ?></td>
+                                                                    <td class="text-end">UGX: <?= number_format($dis, 0, '', ','); ?></td>
+                                                                    <td class="text-end">UGX: <?= number_format((($itemData['item_price'] * $order['quantity']) - $dis), 0, '', ','); ?></td>
+                                                                    <!--end::Total-->
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                            <!--end::Products-->
+                                                            <!--begin::Subtotal-->
+                                                            <tr>
+                                                                <td colspan="4" class="text-end">Subtotal</td>
+                                                                <td class="text-end">UGX: <?= number_format($total, 0, '', ','); ?></td>
+                                                            </tr>
+                                                            <!--end::Subtotal-->
+                                                            <!--begin::VAT-->
+                                                            <tr>
+                                                                <td colspan="4" class="text-end">VAT (0%)</td>
+                                                                <td class="text-end">UGX :0</td>
+                                                            </tr>
+                                                            <!--end::VAT-->
+                                                            <!--begin::Shipping-->
+                                                            <!-- <tr>
+                                                                <td colspan="4" class="text-end">Shipping Rate</td>
+                                                                <td class="text-end">$5.00</td>
+                                                            </tr> -->
+                                                            <!--end::Shipping-->
+                                                            <!--begin::Grand total-->
+                                                            <tr>
+                                                                <td colspan="4" class="fs-3 text-dark text-end">Grand Total</td>
+                                                                <td class="text-dark fs-3 fw-boldest text-end">UGX: <?= number_format($total, 0, '', ','); ?></td>
+                                                            </tr>
+                                                               
+                                                            <?php if(!empty($creditDetails)){ ?>
+                                                            <tr>
+                                                                <td colspan="4" class="fs-3 text-end">Paid</td>
+                                                                <td class="fs-3  text-end">UGX: <?= number_format($creditDetails->amount, 0, '', ','); ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="4" class="fs-3 text-dark text-end">Balance</td>
+                                                                <td class="text-dark fs-3 fw-boldest text-end">UGX: <?= number_format($total - $creditDetails->amount, 0, '', ','); ?></td>
+                                                            </tr>
+                                                        <?php } ?>
+                                                            <!--end::Grand total-->
+                                                        </tbody>
+                                                        <!--end::Table head-->
+                                                    </table>
+                                                    <!--end::Table-->
+                                                </div>
+                                            </div>
+                                            <!--end::Card body-->
+                                        </div>
+                                         <?php if(!empty($creditDetails)){ ?>
+                                        <button onClick="printOut('printIt')" type="button" class="btn btn-success my-1 me-12"> Print Invoice</button>
+                                    <?php } ?>
+                                        <!--end::Product List-->
+                                        <div class="d-flex flex-column flex-xl-row gap-7 gap-lg-10">
+                                            <!--begin::Payment address-->
+                                            <div class="card card-flush py-4 flex-row-fluid overflow-hidden">
+                                                <!--begin::Background-->
+                                               
+                                                <!--end::Background-->
+                                                <!--begin::Card header-->
+                                                <div class="card-header">
+                                                    <div class="card-title">
+                                                        <h2>Clear Payment</h2>
+                                                    </div>
+                                                </div>
+                                                <!--end::Card header-->
+                                                <!--begin::Card body-->
+                                                <div class="card-body pt-0">
+                                                  
+                                                    <centre>
+                                                        <form class="form-control pay">
+                                                            <input type="text" name="bill" value="<?=$bill_no ?>" hidden>
+                                                            <!--begin::Input group-->
+                                                            <div class="d-flex flex-column mb-3 fv-row">
+                                                                <!--begin::Label-->
+                                                                <label class="required fs-5 fw-bold mb-2">Enter Amount Recevied</label>
+                                                                <!--end::Label-->
+                                                                <!--begin::Input-->
+                                                                <input class="form-control form-control-solid" type="number" placeholder="Amount Received From Customer" name="amount" />
+                                                                <!--end::Input-->
+                                                            </div>
+                                                            <!--end::Input group-->
+                                                            <!--end::Order details-->
+                                                            <div class="d-flex flex-column mb-3 fv-row">
+
+                                                                <!--begin::Button-->
+                                                                <button type="submit" name="confirmPay" class="btn btn-primary">
+                                                                    <span class="indicator-label">confirm Payment</span>
+                                                                    <span class="indicator-progress">Please wait...
+                                                                        <span class="spinner-border spinner-border-sm align-middle ms-5"></span></span>
+                                                                </button>
+                                                                <!--end::Button-->
+                                                            </div>
+                                                        </form>
+
+                                                    </centre>
+
+                                                </div>
+                                                <!--end::Card body-->
+
+                                            </div>
+                                             <!--begin::Button-->
+                                                                <button name="credit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="<?=empty($creditDetails)?'#kt_modal_new_address':'#kt_modal_new_address2'?>">
+                                                                    <span class="indicator-label"><?=empty($creditDetails)?'Record':'Update'?>
+                                         <br> Bill #<?=$bill_no ?> <br>Credit Details</span>
+                                                                    <span class="indicator-progress">Please wait...
+                                                                        <span class="spinner-border spinner-border-sm align-middle ms-5"></span></span>
+                                                                </button>
+                                                                <!--end::Button-->
+                                            <!--end::Payment address-->
+                                            <!--begin::Shipping address-->
+
+                                            <!--end::Shipping address-->
+                                        </div>
+                                    </div>
+                                    <!--end::Orders-->
+                                </div>
+                                <!--end::Tab pane-->
+                                <!--begin::Tab pane-->
+                                <div class="tab-pane fade" id="kt_ecommerce_sales_order_history" role="tab-panel">
+                                    <!--begin::Orders-->
+                                    <div class="d-flex flex-column gap-7 gap-lg-10">
+                                        <!--begin::Order history-->
+                                        <div class="card card-flush py-4 flex-row-fluid">
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <!-- <h2>Order History</h2> -->
+                                                </div>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+                                                <div class="table-responsive">
+                                                    <!--begin::Table-->
+                                                    <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0">
+                                                        <!--begin::Table head-->
+                                                        <thead>
+                                                            <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                                                <th class="min-w-100px">Date Added</th>
+                                                                <th class="min-w-175px">Comment</th>
+                                                                <th class="min-w-70px">Order Status</th>
+                                                                <th class="min-w-100px">Customer Notifed</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <!--end::Table head-->
+                                                        <!--begin::Table body-->
+                                                        <tbody class="fw-bold text-gray-600">
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>03/06/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Order completed</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-success">Completed</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>No</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>02/06/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Order received by customer</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-success">Delivered</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>Yes</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>01/06/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Order shipped from warehouse</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-primary">Delivering</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>Yes</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>31/05/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Payment received</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-primary">Processing</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>No</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>30/05/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Pending payment</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-warning">Pending</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>No</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>29/05/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Payment method updated</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-warning">Pending</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>No</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>28/05/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Payment method expired</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-danger">Failed</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>Yes</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>27/05/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Pending payment</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-warning">Pending</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>No</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                            <tr>
+                                                                <!--begin::Date-->
+                                                                <td>26/05/2022</td>
+                                                                <!--end::Date-->
+                                                                <!--begin::Comment-->
+                                                                <td>Order received</td>
+                                                                <!--end::Comment-->
+                                                                <!--begin::Status-->
+                                                                <td>
+                                                                    <!--begin::Badges-->
+                                                                    <div class="badge badge-light-warning">Pending</div>
+                                                                    <!--end::Badges-->
+                                                                </td>
+                                                                <!--end::Status-->
+                                                                <!--begin::Customer Notified-->
+                                                                <td>Yes</td>
+                                                                <!--end::Customer Notified-->
+                                                            </tr>
+                                                        </tbody>
+                                                        <!--end::Table head-->
+                                                    </table>
+                                                    <!--end::Table-->
+                                                </div>
+                                            </div>
+                                            <!--end::Card body-->
+                                        </div>
+                                        <!--end::Order history-->
+                                        <!--begin::Order data-->
+                                        <div class="card card-flush py-4 flex-row-fluid">
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <h2>Order Data</h2>
+                                                </div>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+                                                <div class="table-responsive">
+                                                    <!--begin::Table-->
+                                                    <table class="table align-middle table-row-bordered mb-0 fs-6 gy-5">
+                                                        <!--begin::Table body-->
+                                                        <tbody class="fw-bold text-gray-600">
+                                                            <!--begin::IP address-->
+                                                            <tr>
+                                                                <td class="text-muted">IP Address</td>
+                                                                <td class="fw-bolder text-end">172.68.221.26</td>
+                                                            </tr>
+                                                            <!--end::IP address-->
+                                                            <!--begin::Forwarded IP-->
+                                                            <tr>
+                                                                <td class="text-muted">Forwarded IP</td>
+                                                                <td class="fw-bolder text-end">89.201.163.49</td>
+                                                            </tr>
+                                                            <!--end::Forwarded IP-->
+                                                            <!--begin::User agent-->
+                                                            <tr>
+                                                                <td class="text-muted">User Agent</td>
+                                                                <td class="fw-bolder text-end">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36</td>
+                                                            </tr>
+                                                            <!--end::User agent-->
+                                                            <!--begin::Accept language-->
+                                                            <tr>
+                                                                <td class="text-muted">Accept Language</td>
+                                                                <td class="fw-bolder text-end">en-GB,en-US;q=0.9,en;q=0.8</td>
+                                                            </tr>
+                                                            <!--end::Accept language-->
+                                                        </tbody>
+                                                        <!--end::Table body-->
+                                                    </table>
+                                                    <!--end::Table-->
+                                                </div>
+                                            </div>
+                                            <!--end::Card body-->
+                                        </div>
+                                        <!--end::Order data-->
+                                    </div>
+                                    <!--end::Orders-->
+                                </div>
+                                <!--end::Tab pane-->
+                            </div>
+                            <!--end::Tab content-->
+                        </div>
+                        <!--end::Order details page-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
+<!--begin::Modal - New Address-->
+    <div class="modal fade" id="kt_modal_new_address" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Form-->
+                <!-- <form class="form" action="#" id="kt_modal_new_address_form" method="post"> -->
+                <form class="form creditRecord">
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_new_address_header">
+                        <!--begin::Modal title-->
+                        <h2>Record Client Details</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                            <span class="svg-icon svg-icon-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                    <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Notice-->
+                            <!--begin::Notice-->
+                            <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-9 p-6">
+                                <!--begin::Icon-->
+                                <!--begin::Svg Icon | path: icons/duotune/general/gen044.svg-->
+                                Thank You For Choosing SBS, Record Your Credit Customer Details
+                                <!--end::Svg Icon-->
+                                <!--end::Icon-->
+                            </div>
+                            <!--end::Notice-->
+                            <!--end::Notice-->
+
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <input type="text" name="bill" value="<?= $bill_no?>" hidden>
+                                <input type="text" name="total" value="<?= $total ?>" hidden>
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+
+                                <label class="d-flex align-items-center fs-5 fw-bold mb-2">
+                                    <span class="required">Customer Names</span>
+                                    <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Your payment statements may very based on selected country"></i>
+                                </label>
+                                <!--end::Label-->
+                                 <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" placeholder="Mr/Mrs ........" name="customer_name" required />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="required fs-5 fw-bold mb-2">Customer Tel.</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" placeholder="Customer Tel. Number" name="customer_tel" required />
+                                <!--end::Input-->
+                            </div>
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="fs-5 fw-bold mb-2">Paid Amount</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="number" placeholder="Incase Of Half payment Enter amount received" name="amount"  />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+
+                            <!--end::Input group-->
+
+                        </div>
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_new_address_cancel" class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" name="addRecord" id="kt_modal_new_address_submit" class="btn btn-primary">
+                            <span class="indicator-label upload">Save Record</span>
+                            
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+                <!--end::Form-->
+            </div>
+        </div>
+    </div>
+    <!--end::Modal - New Address-->
+    <!--begin::Modal - New Address-->
+    <div class="modal fade" id="kt_modal_new_address2" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Form-->
+                <!-- <form class="form" action="#" id="kt_modal_new_address_form" method="post"> -->
+                <form class="form updateRecord">
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_new_address_header">
+                        <!--begin::Modal title-->
+                        <h2>Update Client Details</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                            <span class="svg-icon svg-icon-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                    <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_new_address_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_new_address_header" data-kt-scroll-wrappers="#kt_modal_new_address_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Notice-->
+                            <!--begin::Notice-->
+                            <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-9 p-6">
+                                <!--begin::Icon-->
+                                <!--begin::Svg Icon | path: icons/duotune/general/gen044.svg-->
+                                Thank You For Choosing SBS, Update Your Credit Customer Details
+                                <!--end::Svg Icon-->
+                                <!--end::Icon-->
+                            </div>
+                            <!--end::Notice-->
+                            <!--end::Notice-->
+
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <input type="text" name="bill" value="<?= $bill_no?>" hidden>
+                                 <input type="text" name="total" value="<?= $total?>" hidden>
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+
+                                <label class="d-flex align-items-center fs-5 fw-bold mb-2">
+                                    <span class="required">Customer Names</span>
+                                    <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Your payment statements may very based on selected country"></i>
+                                </label>
+                                <!--end::Label-->
+                                 <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" value="<?=$creditDetails->customer_name?>" placeholder="Mr/Mrs ........" name="customer_name" required />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="required fs-5 fw-bold mb-2">Customer Tel.</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="text" placeholder="Customer Tel. Number" value="<?= $creditDetails->customer_tel?>" name="customer_tel" required />
+                                <!--end::Input-->
+                            </div>
+                            <div class="d-flex flex-column mb-5 fv-row">
+                                <!--begin::Label-->
+                                <label class="fs-5 fw-bold mb-2">Paid Amount</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control form-control-solid" type="number" value="<?= $creditDetails->amount?>" placeholder="Incase Of Half payment Enter amount received" name="amount"  />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+
+                            <!--end::Input group-->
+
+                        </div>
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_new_address_cancel" class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" name="addRecord" id="kt_modal_new_address_submit" class="btn btn-primary">
+                            <span class="indicator-label upload">Update Record</span>
+                            
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+                <!--end::Form-->
+            </div>
+        </div>
+    </div>
+    <!--end::Modal - New Address-->
+ <script type="text/javascript">
+        function printOut(divId) {
+        var printOutContent = document.getElementById(divId).innerHTML;
+        var originalContent = document.body.innerHTML;
+        document.body.innerHTML = printOutContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    }
+    $(document).ready(function() {
+        $('.pay').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=orders&s=pay',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: response.bill_status,
+                            icon: "success",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Redirecting You To Receipt",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                        $('.orders').html(response.message);
+                        $('.total').html(response.total);
+                        $total = response.total;
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    })
+    $(document).ready(function() {
+        $('.creditRecord').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=orders&s=creditRecord',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+                    $('.upload').html('Uploading....');
+                    $('.upload').addClass('disabled');
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+                     $('.upload').html('Save Record');
+                    $('.upload').addClass('disabled');
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: "Recorded",
+                            icon: "success",
+                            buttonsStyling: !1,
+                            // confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                       
+
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+     $(document).ready(function() {
+        $('.updateRecord').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=orders&s=updateRecord',
+                method: 'POST',
+                data: $(this).serialize(),
+                beforesend: function() {
+                    $('.upload').html('Uploading....');
+                    $('.upload').addClass('disabled');
+                },
+                success: function(response) {
+                    console.log(response);
+                    //e.removeAttribute("data-kt-indicator");
+                     $('.upload').html('Save Record');
+                    $('.upload').addClass('disabled');
+                    if (response.status == 200) {
+                        Swal.fire({
+                            text: "Recorded",
+                            icon: "success",
+                            buttonsStyling: !1,
+                            // confirmButtonText: "Redirecting You",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+                       
+
+                    } else {
+                        Swal.fire({
+                            text: response.message,
+                            icon: "warning",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Try Again!",
+                            customClass: {
+                                confirmButton: "btn btn-danger"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    })
+</script>               

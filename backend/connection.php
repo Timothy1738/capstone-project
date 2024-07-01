@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";
-$dbname = "Talent_Exhibition_and_Promotion_System";
-$username = "talentverse";
-$password = "Titan@1738";
+$dbname = "talent_exhibition_and_promotion_system";
+$username = "root";
+$password = "";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

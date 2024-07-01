@@ -1,0 +1,252 @@
+ <?php
+$today = getCurrentDate();
+$todayTime = getCurrentDateOnly();
+$day1 = $todayTime . ' 00:00:00';
+$day2 = $todayTime . ' 23:59:59';
+$report = "Orders By " . $sbs['user']['firstname'] . " " . $sbs['user']['lastname'] . "  (Cashier)";
+if (empty($sbs['user']['is_cashier'])) {
+   $report = "Orders By " . $sbs['user']['firstname'] . " " . $sbs['user']['lastname'] . "  (Admin)";
+}
+
+$totalOrders = 0;
+// $orders = getTodaysData("my_orders", "o_business_id", $sbs['bss']['business_id'], "created", getCurrentDateOnly());
+$orders = getOrdersBetweenDaysByCashier($day1, $day2, $sbs['bss']['business_id'], $sbs['user']['user_id']);
+foreach ($orders as $order) {
+    $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+    $totalOrders += $itemData['item_price'] * $order['quantity'];
+}
+
+?>
+ <!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Container-->
+                    <div class="container-xxl" id="kt_content_container">
+                        <div class="text-center mb-18">
+                            <!--begin::Title-->
+                            <h3 class="fs-2hx text-dark mb-6"><?= $sbs['bss']['b_name'] ?></h3>
+                            <!--end::Title-->
+                            <!--begin::Text-->
+                            <div class="fs-5 text-dark fw-bold"><?= $report ?>
+                                <br /><?= 'As At : ' . date('d/m/Y g:iA', strtotime(date('Y-m-d g:ia'))) . '<br />Total Orders =.UGX:  ' . number_format($totalOrders, 0, '', ','); ?><br />
+                            </div>
+                            <!--end::Text-->
+
+                        </div>
+                        <!--begin::Products-->
+                        <div class="card card-flush">
+                            <!--begin::Card header-->
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <!--begin::Card title-->
+                                <div class="card-title">
+                                    <!--begin::Search-->
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                                        <span class="svg-icon svg-icon-1 position-absolute ms-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <input type="text" data-kt-ecommerce-order-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Order" />
+                                    </div>
+                                    <!--end::Search-->
+
+                                </div>
+                                <?php if (empty($sbs['user']['is_cashier'])) { ?>
+                               
+                                 <!--begin::Actions-->
+                                            <div class="d-flex my-4">
+
+
+                                                <!--begin::Menu-->
+                                                <div class="me-0">
+                                                    <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                        <i class="bi bi-three-dots fs-3"></i>
+                                                    </button>
+                                                    <!--begin::Menu 3-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold w-200px py-3" data-kt-menu="true">
+                                                        <!--begin::Heading-->
+                                                        <div class="menu-item px-3">
+                                                            <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Track Credits</div>
+                                                        </div>
+                                                        <!--end::Heading-->
+                                                        <!--begin::Menu item-->
+                                                        <div class="menu-item px-3">
+                                                            <a href="index.php?page=credits" class="menu-link px-3">Check Credits</a>
+                                                        </div>
+                                                        <!--end::Menu item-->
+
+                                                    </div>
+                                                    <!--end::Menu 3-->
+                                                </div>
+                                                <!--end::Menu-->
+                                            </div>
+                                            <!--end::Actions-->
+                                        <?php   } ?>
+                                <!--end::Card title-->
+                                <!--begin::Card toolbar-->
+                                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                                    <!--begin::Flatpickr-->
+                                    <!--end::Flatpickr-->
+                                    <div class="w-100 mw-150px">
+                                        <!--begin::Select2-->
+                                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Status" data-kt-ecommerce-order-filter="status">
+                                            <option></option>
+                                            <option value="all">All</option>
+                                            <option value="Paid">Paid</option>
+                                            <option value="Credit">Credit</option>
+                                        </select>
+                                        <!--end::Select2-->
+                                    </div>
+                                    <!--begin::Add product-->
+                                    <a href="index.php?page=addOrder" class="btn btn-primary">Add Sale</a>
+                                    <!--end::Add product-->
+                                </div>
+                                <!--end::Card toolbar-->
+                            </div>
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <!--begin::Table-->
+                                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_sales_table">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <!--begin::Table row-->
+                                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="min-w-20px">S/No.</th>
+                                            <th class="min-w-60px">Bill No.</th>
+                                            <th class="min-w-100px">Product</th>
+                                            <th class=" min-w-70px">Status</th>
+                                            <th class="min-w-80px">Quantity</th>
+                                            <th class=" min-w-80px">Unit Price</th>
+                                            <th class=" min-w-90px">Total Amount</th>
+                                            <th class="text-end min-w-100px">Date</th>
+                                            <th class="text-end min-w-100px d-none">Date Modified</th>
+                                            <th class="text-end min-w-100px">Actions</th>
+                                        </tr>
+                                        <!--end::Table row-->
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody class="fw-bold text-gray-600">
+
+                                        <!--end::Table row-->
+                                        <?php
+                                        $num = 0;
+                                        foreach ($orders as $order) :
+                                            $itemData = single_item("items", "WHERE item_id = '" . $order['item_id'] . "'");
+                                        ?>
+                                            <!--begin::Table row-->
+                                            <tr>
+                                                <!--begin::Checkbox-->
+                                                <td>
+                                                    <?= $num += 1 ?>
+                                                </td>
+                                                <!--end::Checkbox-->
+                                                <!--begin::Order ID=-->
+                                                <td data-kt-ecommerce-order-filter="order_id">
+                                                    <a href="details.html" class="text-gray-800 text-hover-primary fw-bolder"><?= $order['bill_no'] ?></a>
+                                                </td>
+                                                <!--end::Order ID=-->
+                                                <!--begin::Customer=-->
+                                                <td>
+                                                    <?= $itemData['item_name'] ?>
+                                                </td>
+                                                <!--end::Customer=-->
+
+                                                <!--begin::Status=-->
+                                                <?php if ($order['status'] == 0) { ?>
+                                                    <td class="pe-0" data-order="Credit">
+                                                        <!--begin::Badges-->
+                                                        <div class="badge badge-light-danger">Credit</div>
+                                                        <!--end::Badges-->
+                                                    </td>
+                                                <?php } else { ?>
+                                                    <td class="pe-0" data-order="Paid">
+                                                        <div class="min-w-125px">
+                                                            <span class="badge badge-light-success">Paid</span>
+                                                        </div>
+                                                    </td>
+
+                                                <?php } ?>
+
+                                                <!--end::Status=-->
+                                                <td><?= $order['quantity'] . ' ' . $itemData['units'] ?></td>
+                                                <!--begin::Total=-->
+                                                <td class="pe-0">
+                                                    <span class="fw-bolder">UGX: <?= number_format($itemData['item_price'], 0, '', ','); ?></span>
+                                                </td>
+                                                <!--end::Total=-->
+                                                <!--begin::Date Added=-->
+                                                <td class="pe-0">
+                                                    <span class="fw-bolder">UGX: <?= number_format($itemData['item_price'] * $order['quantity'], 0, '', ','); ?></span>
+                                                </td>
+                                                <!--end::Date Added=-->
+                                                <!--begin::Date Modified=-->
+                                                <td class="text-end" data-order="2022-06-06">
+                                                    <span class="fw-bolder"><?= $order['created'] ?></span>
+                                                </td>
+                                                <td class="text-end d-none" data-order="2022-06-06">
+                                                    <span class="fw-bolder">19/05/2022</span>
+                                                </td>
+                                                <!--end::Date Modified=-->
+                                                <!--begin::Action=-->
+                                                <td class="text-end">
+                                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
+                                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                                        <span class="svg-icon svg-icon-5 m-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                                            </svg>
+                                                        </span>
+                                                        <!--end::Svg Icon-->
+                                                    </a>
+                                                    <!--begin::Menu-->
+                                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                                        <!--begin::Menu item-->
+                                                       
+                                                        <!--end::Menu item-->
+                                                        <!--begin::Menu item-->
+                                                        <?php if ($order['status'] == 0) { ?>
+                                                             <div class="menu-item px-3">
+                                                            <a href="index.php?page=orderDetails&bill=<?= $order['bill_no'] ?>" class="menu-link px-3">View</a>
+                                                        </div>
+                                                            <div class="menu-item px-3">
+                                                                <a href="index.php?page=orderDetails&bill=<?= $order['bill_no'] ?>" class="menu-link px-3">clearPayment</a>
+                                                            </div>
+                                                        <?php } ?>
+                                                        <!--end::Menu item-->
+                                                        <!--begin::Menu item-->
+                                                        <?php if ($order['status'] == 1) { ?>
+                                                            <div class="menu-item px-3">
+                                                                <a href="index.php?page=receipt&bill=<?= $order['bill_no'] ?>" class="menu-link px-3">Print Reciept</a>
+                                                            </div>
+                                                        <?php } ?>
+                                                        <!--end::Menu item-->
+                                                    </div>
+                                                    <!--end::Menu-->
+                                                </td>
+                                                <!--end::Action=-->
+                                            </tr>
+                                            <!--end::Table row-->
+                                        <?php endforeach; ?>
+                                        <!--begin::Table row-->
+
+
+                                        <!--begin::Table row-->
+
+                                        <!--begin::Table row-->
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Products-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Content-->
